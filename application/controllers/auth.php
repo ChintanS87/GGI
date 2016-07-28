@@ -11,6 +11,7 @@ class Auth extends CI_Controller
 		$this->load->library('security');
 		$this->load->library('tank_auth');
 		$this->lang->load('tank_auth');
+                $this->load->library('amplifier', array('appId' => $this->config->item('fb_app_id'), 'secret' => $this->config->item('fb_app_secret'), 'fileUpload' => true));
 	}
 
 	function index()
@@ -27,6 +28,14 @@ class Auth extends CI_Controller
 	 *
 	 * @return void
 	 */
+        function facebook_auth()
+        {
+            
+            
+            
+        }
+        
+        
 	function login()
 	{
 		if ($this->tank_auth->is_logged_in()) {									// logged in
@@ -132,6 +141,8 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email');
 			$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
 			$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|xss_clean|matches[password]');
+                        $this->form_validation->set_rules('contactnum', 'Contact Number', 'trim|required|xss_clean|numeric');
+                        $this->form_validation->set_rules('address', 'Address', 'trim|required|xss_clean|alpha_dash');
 
 			$captcha_registration	= $this->config->item('captcha_registration', 'tank_auth');
 			$use_recaptcha			= $this->config->item('use_recaptcha', 'tank_auth');
@@ -151,6 +162,8 @@ class Auth extends CI_Controller
 						$use_username ? $this->form_validation->set_value('username') : '',
 						$this->form_validation->set_value('email'),
 						$this->form_validation->set_value('password'),
+                                                $this->form_validation->set_value('contactnum'),
+                                                $this->form_validation->set_value('address'),
 						$email_activation))) {									// success
 
 					$data['site_name'] = $this->config->item('website_name', 'tank_auth');
@@ -317,7 +330,7 @@ class Auth extends CI_Controller
 				$this->_show_message($this->lang->line('auth_message_new_password_activated').' '.anchor('/auth/login/', 'Login'));
 
 			} else {														// fail
-				$this->_show_message($this->lang->line('auth_message_new_password_failed'));
+                            $this->_show_message($this->lang->line('auth_message_new_password_failed'));
 			}
 		} else {
 			// Try to activate user by password key (if not activated yet)

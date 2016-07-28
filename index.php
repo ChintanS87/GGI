@@ -199,6 +199,8 @@ if (defined('ENVIRONMENT'))
  * And away we go...
  *
  */
+date_default_timezone_set('Asia/Kolkata');        
+require_once __DIR__ . '/vendor/autoload.php';        
 require_once APPPATH.'third_party/datamapper/bootstrap.php'; 
 require_once BASEPATH.'core/CodeIgniter.php';
 

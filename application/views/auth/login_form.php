@@ -88,6 +88,11 @@ $captcha = array(
 			<?php if ($this->config->item('allow_registration', 'tank_auth')) echo anchor('/auth/register/', 'Register'); ?>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="3">
+			<?php echo anchor('/auth/facebook_auth/', 'Facebook Login'); ?>
+		</td>
+	</tr>        
 </table>
 <?php echo form_submit('submit', 'Let me in'); ?>
 <?php echo form_close(); ?>

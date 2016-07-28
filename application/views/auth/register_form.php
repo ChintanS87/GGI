@@ -34,6 +34,20 @@ $captcha = array(
 	'id'	=> 'captcha',
 	'maxlength'	=> 8,
 );
+$contactnum = array(
+	'name'	=> 'contactnum',
+	'id'	=> 'contactnum',
+	'value'	=> set_value('contactnum'),
+	'maxlength'	=> 15,
+	'size'	=> 30,
+);
+$address = array(
+	'name'	=> 'address',
+	'id'	=> 'address',
+	'value'	=> set_value('address'),
+	'maxlength'	=> 500,
+	'size'	=> 30,
+);
 ?>
 <?php echo form_open($this->uri->uri_string()); ?>
 <table>
@@ -58,6 +72,16 @@ $captcha = array(
 		<td><?php echo form_label('Confirm Password', $confirm_password['id']); ?></td>
 		<td><?php echo form_password($confirm_password); ?></td>
 		<td style="color: red;"><?php echo form_error($confirm_password['name']); ?></td>
+	</tr>
+	<tr>
+		<td><?php echo form_label('Contact Number', $contactnum['id']); ?></td>
+		<td><?php echo form_input($contactnum); ?></td>
+		<td style="color: red;"><?php echo form_error($contactnum['name']); ?></td>
+	</tr>
+	<tr>
+		<td><?php echo form_label('Address', $address['id']); ?></td>
+		<td><?php echo form_textarea($address); ?></td>
+		<td style="color: red;"><?php echo form_error($address['name']); ?></td>
 	</tr>
 
 	<?php if ($captcha_registration) {
