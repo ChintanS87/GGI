@@ -1,5 +1,7 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+use \Amplifier\Amplifier;
+
 class Auth extends CI_Controller
 {
 	function __construct()
@@ -11,9 +13,18 @@ class Auth extends CI_Controller
 		$this->load->library('security');
 		$this->load->library('tank_auth');
 		$this->lang->load('tank_auth');
-                $this->load->library('amplifier', array('appId' => $this->config->item('fb_app_id'), 'secret' => $this->config->item('fb_app_secret'), 'fileUpload' => true));
+
+		$this->load->config('app');
+                $this->amplifier = new Amplifier(
+				array(
+					'appId' => $this->config->item('fb_app_id'),
+					'secret' => $this->config->item('fb_app_secret'),
+				)
+			);                
+
 	}
 
+        
 	function index()
 	{
 		if ($message = $this->session->flashdata('message')) {
@@ -28,12 +39,53 @@ class Auth extends CI_Controller
 	 *
 	 * @return void
 	 */
-        function facebook_auth()
-        {
-            
-            
-            
-        }
+	public function facebook_auth($redirect_uri = '') {
+
+		$user_id = $this->amplifier->getUser();
+		
+		$user_profile = array();
+		
+		if($user_id) {
+
+			try {
+				$user_profile = $this->amplifier->api('/'.$user_id); 
+			} catch (FacebookApiException $e) {
+				error_log($e);
+			}
+			
+			if(array_key_exists('email', $user_profile)) { 
+
+			} else {
+				/* user is not valid, redirect to login uri */
+				
+				$login_params = array(
+						'redirect_uri' => site_url('auth/login'),
+						'scope' => $this->config->item('fb_app_scope'),
+				);
+				
+				echo 'Please wait while we redirect you...';
+				echo '<script> top.location.href="' . $this->amplifier->getLoginUrl($login_params) . '";</script>';
+				die();
+				
+			}
+			
+		} else {
+			
+			/* redirect to login uri */
+			$login_params = array(
+					'redirect_uri' => site_url('account/login'),
+					'scope' => $this->config->item('app_scope'),
+			);
+				
+			echo 'Please wait while we redirect you...';
+			echo '<script> top.location.href="' . $this->amplifier->getLoginUrl($login_params) . '";</script>';
+			die();
+		}
+		
+		redirect('home/index');
+	}
+        
+
         
         
 	function login()
