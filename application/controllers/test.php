@@ -1,5 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-
+use \Amplifier\Amplifier;
 class Test extends CI_Controller
 {
     
