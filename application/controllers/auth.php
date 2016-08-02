@@ -42,7 +42,7 @@ class Auth extends CI_Controller
                 
                 
     public function facebook_auth() {
-        $redirect_uri = 'test/facebook_auth';
+        $redirect_uri = 'auth/facebook_auth';
 
         $user = $this->amplifier->getUser();
         $user_profile = false;
