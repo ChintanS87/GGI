@@ -3,7 +3,7 @@
 $config['fb_app_id'] = '310534155952669';
 $config['fb_app_secret'] = '61954d7845f9d6bc7515ebf5f9979075';
 //$config['fb_app_scope'] = 'publish_actions, email, user_photos';
-$config['fb_app_scope'] = 'public_profile, email, user_friends';
+$config['fb_app_scope'] = '';
 //$config['fb_app_url'] = 'http://apps.facebook.com/gograbit';
 $config['fb_app_name'] = 'GoGrabIt';
 $config['fb_app_image'] = './statics/img/story.png';
