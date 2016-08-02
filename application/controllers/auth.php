@@ -53,7 +53,7 @@ class Auth extends CI_Controller
                     error_log('Facebook Exception: ' . $e);
                 }
 
-            $extended_perms = $this->amplifier->get_extended_perms();
+            //$extended_perms = $this->amplifier->get_extended_perms();
             if (!isset($extended_perms['data'][0]['permission'])) {				
 				$login_params = array(
                     'redirect_uri' => site_url($redirect_uri),
