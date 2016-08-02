@@ -21,7 +21,7 @@ class Home extends __APP__
 			$this->data['username']	= $this->tank_auth->get_username();
                         
                         
-                        $this->data['search_results'] = $this->auction->get();
+                        //$this->data['search_results'] = $this->auction->get();
 			$this->load->view('home', $this->data);
 		}
 	}
