@@ -97,7 +97,7 @@ class Account extends __APP__
                     } else {
                         /* user is not valid, redirect to login uri */				
                         $login_params = array(
-                                        'redirect_uri' => site_url('account/step2'),
+                                        'redirect_uri' => site_url('account/facebook_auth'),
                                         'scope' => $this->config->item('fb_app_scope'),
                         );
 
@@ -108,7 +108,7 @@ class Account extends __APP__
             } else {			
                 /* redirect to login uri */
                 $login_params = array(
-                                'redirect_uri' => site_url('account/step2'),
+                                'redirect_uri' => site_url('account/facebook_auth'),
                                 'scope' => $this->config->item('fb_app_scope'),
                 );
 
@@ -117,47 +117,7 @@ class Account extends __APP__
                 die();
             }		
             redirect('account/step2');
-            
-            
-            
-            
-            
-            
-/*
-		$user_id = $this->amplifier->getUser();		
-		$user_profile = array();
-		
-		if($user_id) {
-			try {
-				$user_profile = $this->amplifier->api('/'.$user_id); 
-			} catch (FacebookApiException $e) {
-				error_log($e);
-			}
-			
-			if(array_key_exists('email', $user_profile)) { 
 
-			} else {
-				$login_params = array(
-						'redirect_uri' => site_url('account/step2'),
-						'scope' => $this->config->item('fb_app_scope'),
-				);
-				
-				echo 'Please wait while we redirect you...';
-				echo '<script> top.location.href="' . $this->amplifier->getLoginUrl($login_params) . '";</script>';
-				die();
-			}			
-		} else {
-			$login_params = array(
-					'redirect_uri' => site_url('account/step2'),
-					'scope' => $this->config->item('app_scope'),
-			);
-				
-			echo 'Please wait while we redirect you...';
-			echo '<script> top.location.href="' . $this->amplifier->getLoginUrl($login_params) . '";</script>';
-			die();
-		}		
-		redirect('account/step2');
- */
 	}
         
         public function step2()
