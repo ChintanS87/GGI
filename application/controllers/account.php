@@ -32,14 +32,14 @@ class Account extends __APP__
 	    $user_profile = array();
 		
             if($user_id) {
-                echo 'user id retrieved';
-                die();
                 try {
                         $user_profile = $this->amplifier->api('/'.$user_id); 
                     } catch (FacebookApiException $e) {
                             error_log($e);
                     }
-			
+			echo 'user profile retrived';
+                        die();
+                        
                     if(array_key_exists('email', $user_profile)) {
 
                         /* user is valid */
