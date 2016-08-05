@@ -50,7 +50,7 @@ class Account extends __APP__
 
 			} else {
 				$login_params = array(
-						'redirect_uri' => site_url('auth/login'),
+						'redirect_uri' => site_url('account/step2'),
 						'scope' => $this->config->item('fb_app_scope'),
 				);
 				
@@ -60,7 +60,7 @@ class Account extends __APP__
 			}			
 		} else {
 			$login_params = array(
-					'redirect_uri' => site_url('auth/login'),
+					'redirect_uri' => site_url('account/step2'),
 					'scope' => $this->config->item('app_scope'),
 			);
 				
