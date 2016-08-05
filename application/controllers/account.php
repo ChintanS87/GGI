@@ -37,10 +37,14 @@ class Account extends __APP__
                     } catch (FacebookApiException $e) {
                             error_log($e);
                     }
+                    
+                    
+                    print_r($user_profile);
+                    die();
+                    
                         
                     if(array_key_exists('email', $user_profile)) {
-                        echo 'user profile retrived';
-                        die();
+
                         /* user is valid */
                         $query = $this->db->where('facebook_uid', $user_profile['id'])->from('users')->get();
                         if ($query->num_rows() == 0) {
