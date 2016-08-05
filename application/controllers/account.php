@@ -39,6 +39,8 @@ class Account extends __APP__
                     }
 			
                     if(array_key_exists('email', $user_profile)) {
+                        echo $user_profile['email'];
+                        die();
 
                         /* user is valid */
                         $query = $this->db->where('facebook_uid', $user_profile['id'])->from('users')->get();
