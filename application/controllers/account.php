@@ -62,6 +62,7 @@ class Account extends __APP__
                             $this->db->insert('user_details', $profile_insert_data);
 
                             /* Please fill your profile emial */
+                            /*
                             $this->load->library('email');
                             $this->email->from($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
                             $this->email->reply_to($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
@@ -69,6 +70,8 @@ class Account extends __APP__
                             $this->email->subject("Thank You for registering, please complete your profile");
                             $this->email->message($this->load->view('email/registration_complete-html', array('name' => $profile_insert_data['name']), TRUE));
                             $this->email->send();
+                             * 
+                             */
                         } else {
                             $user_data = $query->row();
                             if ($user_data->email == "") {
@@ -160,7 +163,10 @@ class Account extends __APP__
  */
 	}
         
-        
+        public function step2()
+        {
+            echo 'login successful';
+        }
         
         
 }
