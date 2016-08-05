@@ -32,6 +32,8 @@ class Account extends __APP__
 	    $user_profile = array();
 		
             if($user_id) {
+                echo 'user id retrieved';
+                die();
                 try {
                         $user_profile = $this->amplifier->api('/'.$user_id); 
                     } catch (FacebookApiException $e) {
@@ -39,8 +41,6 @@ class Account extends __APP__
                     }
 			
                     if(array_key_exists('email', $user_profile)) {
-                        echo $user_profile['email'];
-                        die();
 
                         /* user is valid */
                         $query = $this->db->where('facebook_uid', $user_profile['id'])->from('users')->get();
