@@ -1,6 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-use \Amplifier\Amplifier;
 
 class Auth extends CI_Controller
 {
@@ -12,16 +11,7 @@ class Auth extends CI_Controller
 		$this->load->library('form_validation');
 		$this->load->library('security');
 		$this->load->library('tank_auth');
-		$this->lang->load('tank_auth');
-
-		$this->load->config('app');
-                $this->amplifier = new Amplifier(
-				array(
-					'appId' => $this->config->item('fb_app_id'),
-					'secret' => $this->config->item('fb_app_secret'),
-				)
-			);                
-
+		$this->lang->load('tank_auth');               
 	}
 
         
@@ -39,57 +29,7 @@ class Auth extends CI_Controller
 	 *
 	 * @return void
 	 */
-                
-                
-	public function facebook_auth($redirect_uri = '') {
-
-		$user_id = $this->amplifier->getUser();
-		
-		$user_profile = array();
-		
-		if($user_id) {
-
-			try {
-				$user_profile = $this->amplifier->api('/'.$user_id); 
-			} catch (FacebookApiException $e) {
-				error_log($e);
-			}
-			
-			if(array_key_exists('email', $user_profile)) { 
-
-			} else {
-				/* user is not valid, redirect to login uri */
-				
-				$login_params = array(
-						'redirect_uri' => site_url('auth/login'),
-						'scope' => $this->config->item('fb_app_scope'),
-				);
-				
-				echo 'Please wait while we redirect you...';
-				echo '<script> top.location.href="' . $this->amplifier->getLoginUrl($login_params) . '";</script>';
-				die();
-				
-			}
-			
-		} else {
-			
-			/* redirect to login uri */
-			$login_params = array(
-					'redirect_uri' => site_url('home/index'),
-					'scope' => $this->config->item('app_scope'),
-			);
-				
-			echo 'Please wait while we redirect you...';
-			echo '<script> top.location.href="' . $this->amplifier->getLoginUrl($login_params) . '";</script>';
-			die();
-		}
-		
-		redirect('home/index');
-	}
-        
-
-        
-        
+              
 	function login()
 	{
 		if ($this->tank_auth->is_logged_in()) {									// logged in
@@ -188,6 +128,9 @@ class Auth extends CI_Controller
 			$this->_show_message($this->lang->line('auth_message_registration_disabled'));
 
 		} else {
+                        $this->form_validation->set_rules('first_name', 'First Name', 'trim|required|xss_clean|alpha');
+                        $this->form_validation->set_rules('last_name', 'Last Name', 'trim|required|xss_clean|alpha');
+                         
 			$use_username = $this->config->item('use_username', 'tank_auth');
 			if ($use_username) {
 				$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean|min_length['.$this->config->item('username_min_length', 'tank_auth').']|max_length['.$this->config->item('username_max_length', 'tank_auth').']|alpha_dash');
@@ -195,7 +138,7 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email');
 			$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
 			$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|xss_clean|matches[password]');
-                        $this->form_validation->set_rules('contactnum', 'Contact Number', 'trim|required|xss_clean|numeric');
+                        $this->form_validation->set_rules('contact_number', 'Mobile Number', 'trim|required|xss_clean|numeric');
                         $this->form_validation->set_rules('address', 'Address', 'trim|required|xss_clean|alpha_dash');
 
 			$captcha_registration	= $this->config->item('captcha_registration', 'tank_auth');
@@ -216,10 +159,29 @@ class Auth extends CI_Controller
 						$use_username ? $this->form_validation->set_value('username') : '',
 						$this->form_validation->set_value('email'),
 						$this->form_validation->set_value('password'),
-                                                $this->form_validation->set_value('contactnum'),
-                                                $this->form_validation->set_value('address'),
 						$email_activation))) {									// success
 
+                                    
+                                        $query = $this->db->query("Select id from users where email='".$this->input->post('email')."'");                                    
+                                        $row = $query->row();
+                                        if (isset($row))
+                                        {
+                                             $userid_insert = $row->id;
+                                        }
+                                        $date_now = new DateTime('now');
+                                        
+                                        $user_details_insert = array('user_id' => $userid_insert,
+                                            'first_name'=>$this->input->post('first_name'),
+                                            'last_name'=> $this->input->post('last_name'),
+                                            'contact_number' => $this->input->post('contact_number'),
+                                            'address' => $this->input->post('address'),
+                                            'added_date' => date('Y-m-d H:i:s'),
+                                            'updated_date' => date('Y-m-d H:i:s')
+                                            );                                        
+                                        $this->db->insert('user_details',$user_details_insert);
+                                        
+                                        
+                                        
 					$data['site_name'] = $this->config->item('website_name', 'tank_auth');
 
 					if ($email_activation) {									// send "activate" email

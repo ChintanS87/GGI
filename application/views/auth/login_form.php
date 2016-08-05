@@ -90,7 +90,7 @@ $captcha = array(
 	</tr>
 	<tr>
 		<td colspan="3">
-			<?php echo anchor('/auth/facebook_auth/', 'Facebook Login'); ?>
+			<?php echo anchor('/account/facebook_auth/', 'Facebook Login'); ?>
 		</td>
 	</tr>        
 </table>

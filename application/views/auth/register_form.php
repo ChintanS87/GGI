@@ -34,10 +34,10 @@ $captcha = array(
 	'id'	=> 'captcha',
 	'maxlength'	=> 8,
 );
-$contactnum = array(
-	'name'	=> 'contactnum',
-	'id'	=> 'contactnum',
-	'value'	=> set_value('contactnum'),
+$contact_number = array(
+	'name'	=> 'contact_number',
+	'id'	=> 'contact_number',
+	'value'	=> set_value('contact_number'),
 	'maxlength'	=> 15,
 	'size'	=> 30,
 );
@@ -48,9 +48,33 @@ $address = array(
 	'maxlength'	=> 500,
 	'size'	=> 30,
 );
+$first_name = array(
+	'name'	=> 'first_name',
+	'id'	=> 'first_name',
+	'value'	=> set_value('first_name'),
+	'maxlength'	=> 30,
+	'size'	=> 30,
+);
+$last_name = array(
+	'name'	=> 'last_name',
+	'id'	=> 'last_name',
+	'value'	=> set_value('last_name'),
+	'maxlength'	=> 30,
+	'size'	=> 30,
+);
 ?>
 <?php echo form_open($this->uri->uri_string()); ?>
 <table>
+	<tr>
+		<td><?php echo form_label('First Name', $first_name['id']); ?></td>
+		<td><?php echo form_input($first_name); ?></td>
+		<td style="color: red;"><?php echo form_error($first_name['name']); ?></td>
+	</tr>
+	<tr>
+		<td><?php echo form_label('Last Name', $last_name['id']); ?></td>
+		<td><?php echo form_input($last_name); ?></td>
+		<td style="color: red;"><?php echo form_error($last_name['name']); ?></td>
+	</tr>        
 	<?php if ($use_username) { ?>
 	<tr>
 		<td><?php echo form_label('Username', $username['id']); ?></td>
@@ -74,9 +98,9 @@ $address = array(
 		<td style="color: red;"><?php echo form_error($confirm_password['name']); ?></td>
 	</tr>
 	<tr>
-		<td><?php echo form_label('Contact Number', $contactnum['id']); ?></td>
-		<td><?php echo form_input($contactnum); ?></td>
-		<td style="color: red;"><?php echo form_error($contactnum['name']); ?></td>
+		<td><?php echo form_label('Mobile Number', $contact_number['id']); ?></td>
+		<td><?php echo form_input($contact_number); ?></td>
+		<td style="color: red;"><?php echo form_error($contact_number['name']); ?></td>
 	</tr>
 	<tr>
 		<td><?php echo form_label('Address', $address['id']); ?></td>
