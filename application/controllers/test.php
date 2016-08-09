@@ -6,8 +6,9 @@ class Test extends CI_Controller
 public function sendemail(){
         $config = Array(
         'protocol' => 'smtp',
-        'smtp_host' => 'sg2plcpnl0157.prod.sin2.secureserver.net',
-        'smtp_port' => '465',
+        //'smtp_host' => 'sg2plcpnl0157.prod.sin2.secureserver.net',
+        'smtp_host' => 'relay-hosting.secureserver.net',    
+        'smtp_port' => '25',
         'smtp_user' => 'rajul@holisticitsoln.com',
         'smtp_pass' => 'Deepak52',
         );
