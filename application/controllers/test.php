@@ -6,14 +6,14 @@ class Test extends CI_Controller
 public function sendemail(){
         $config = Array(
         'protocol' => 'smtp',
-        'smtp_host' => 'relay-hosting.secureserver.net',
-        'smtp_port' => '25',
-        'smtp_user' => 'hajiali@shrimadrajchandramission.org',
-        'smtp_pass' => 'GURUPREM',
+        'smtp_host' => 'sg2plcpnl0157.prod.sin2.secureserver.net',
+        'smtp_port' => '465',
+        'smtp_user' => 'rajul@holisticitsoln.com',
+        'smtp_pass' => 'Deepak52',
         );
         $this->load->library('email', $config);
         $this->email->set_newline("\r\n");
-        $this->email->from('hajiali@shrimadrajchandramission.org', 'GoGrabIt');
+        $this->email->from('rajul@holisticitsoln.com', 'GoGrabIt');
         $this->email->to('rajuldm@gmail.com');
         $this->email->subject('Test Mail');
         $this->email->message('Test Codeigniter mail');
