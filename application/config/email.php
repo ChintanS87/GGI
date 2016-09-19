@@ -11,7 +11,7 @@
 |
 */
 /* config for sending mails from gmail account*/
-/*
+
 $config['protocol'] = 'smtp';
 $config['smtp_host'] = 'ssl://smtp.googlemail.com';
 $config['smtp_user'] = 'hajiali@shrimadrajchandramission.org';
@@ -21,11 +21,11 @@ $config['charset']    = 'utf-8';
 $config['newline']    = "\r\n";
 $config['mailtype'] = 'html'; // or html
 $config['validation'] = false; // bool whether to validate email or not
-*/
 
 
 
-/* config for sending mails from godaddy account*/
+
+/* config for sending mails from godaddy account
 $config['protocol'] = 'smtp';
 $config['smtp_host'] = 'localhost';
 $config['smtp_user'] = 'rajul@holisticitsoln.com';
@@ -35,7 +35,7 @@ $config['charset']    = 'utf-8';
 $config['newline']    = "\r\n";
 $config['mailtype'] = 'html'; // or html
 $config['validation'] = false; // bool whether to validate email or not
-
+*/
 
 /* End of file email.php */
 /* Location: ./application/config/email.php */

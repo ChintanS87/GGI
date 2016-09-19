@@ -161,7 +161,7 @@ class Auth extends CI_Controller
 						$this->form_validation->set_value('password'),
 						$email_activation))) {									// success
 
-                                    
+                                        /*added by rajul start*/
                                         $query = $this->db->query("Select id from users where email='".$this->input->post('email')."'");                                    
                                         $row = $query->row();
                                         if (isset($row))
@@ -175,11 +175,12 @@ class Auth extends CI_Controller
                                             'last_name'=> $this->input->post('last_name'),
                                             'contact_number' => $this->input->post('contact_number'),
                                             'address' => $this->input->post('address'),
+                                            'user_coins' => 10,
                                             'added_date' => date('Y-m-d H:i:s'),
                                             'updated_date' => date('Y-m-d H:i:s')
                                             );                                        
                                         $this->db->insert('user_details',$user_details_insert);
-                                        
+                                        /*added by rajul end*/
                                         
                                         
 					$data['site_name'] = $this->config->item('website_name', 'tank_auth');
