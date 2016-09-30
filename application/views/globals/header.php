@@ -11,17 +11,19 @@
         <link rel="stylesheet" href="<?= base_url(); ?>statics/flipclock/compiled/flipclock.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="<?= base_url(); ?>statics/slick/slick/slick.css">
-        -->
         <link rel="stylesheet" href="<?= base_url(); ?>statics/css/style.css">
+        -->
+        
         
         <!--
         <link rel="Shortcut Icon" href="<?= base_url(); ?>statics/images/favicon.ico">
-        <script src="<?= base_url(); ?>statics/js/jquery.min.js"></script>
-        <script src="<?= base_url(); ?>statics/js/bootstrap.min.js"></script>
+        
         <script src="<?= base_url(); ?>statics/zebra/public/javascript/zebra_datepicker.js"></script>
         <script src="<?= base_url(); ?>statics/flipclock/compiled/flipclock.min.js"></script>
         <script src="<?= base_url(); ?>statics/slick/slick/slick.min.js"></script>
         -->
+        <script src="<?= base_url(); ?>statics/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="<?= base_url(); ?>statics/vendor/bootstrap/dist/js/bootstrap.min.js"></script>        
         <script src="<?= base_url(); ?>statics/js/main.js"></script>
 
         <script>

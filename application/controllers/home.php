@@ -53,7 +53,7 @@ class Home extends __APP__
                 $this->data['user_coins'] = $this->user_details->select('user_coins')->where('user_id',$data['user_id'])->get(); 
             }
             
-        //$this->load->view('/globals/header', $this->data);    
+        $this->load->view('/globals/header', $this->data);    
         $this->load->view('home', $this->data);
     }
     

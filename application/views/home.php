@@ -49,8 +49,14 @@ echo "Product Description ".$row->prod_desc;
 echo "<br/>";
 echo "Product Cost ".$row->prod_cost;
 echo "<br/>";
+
+echo '<div><span id="time_'.$row->product_id.'"></span><br/><input type="button" name="bid_'.$row->product_id.'" id="bid_'.$row->product_id.'" value="Bid Now"/></div>';
+
  }
  ?>
+
+
+
 
 
 <br/><br/> 
@@ -81,26 +87,3 @@ echo "<br/>";
  } 
 ?>
 
-
-
-
-
-<h1>Countdown Clock</h1>
-<div id="clockdiv">
-  <div>
-    <span class="days"></span>
-    <div class="smalltext">Days</div>
-  </div>
-  <div>
-    <span class="hours"></span>
-    <div class="smalltext">Hours</div>
-  </div>
-  <div>
-    <span class="minutes"></span>
-    <div class="smalltext">Minutes</div>
-  </div>
-  <div>
-    <span class="seconds"></span>
-    <div class="smalltext">Seconds</div>
-  </div>
-</div>
