@@ -19,41 +19,44 @@ class Purchase extends __APP__
             if (!$this->tank_auth->is_logged_in()) {
                     redirect('/auth/login/');
             } else {
-                $redirectpage = '';
+                $redirectpage = 'false';
                 
-                    $this->data['user_id'] = $this->tank_auth->get_user_id();
-                    $this->data['username'] = $this->tank_auth->get_username();
-                    
-                    $this->form_validation->set_rules('purchase_form_amount', 'Amount', 'trim|required|xss_clean|numeric');
-                    $this->form_validation->set_rules('purchase_form_coins', 'Coins', 'trim|required|xss_clean|numeric');
+                $this->data['user_id'] = $this->tank_auth->get_user_id();
+                $this->data['username'] = $this->tank_auth->get_username();
 
-                    if ($this->form_validation->run()) {
-                        $this->data['amount'] = $this->input->post('purchase_form_amount');
-                        $this->data['purchase_form_coins'] = $this->input->post('purchase_form_coins');
-                        
-                        $this->data['firstname'] = 'Rajul';
-                        $this->data['email'] = 'rajuldm@gmail.com';
-                        $this->data['phone'] = '9820031191';
-                        $this->data['productinfo'] = 'Test Product';
-                        $this->data['surl'] = base_url().'purchase/payum_payment_success.php';
-                        $this->data['furl'] = base_url().'purchase/payum_payment_failure.php';
+                $this->form_validation->set_rules('purchase_form_amount', 'Amount', 'trim|required|xss_clean|numeric');
+                $this->form_validation->set_rules('purchase_form_coins', 'Coins', 'trim|required|xss_clean|numeric');
 
-                        $this->data['key'] = 'Sv6Ywd7n';
-                        $this->data['SALT'] = 'GguFpaTo3k';
-                        $this->data['txnid'] = substr(hash('sha256', mt_rand() . microtime()), 0, 20);
-            
-            
-                        $redirectpage = 'true';
-                    }
+                if ($this->form_validation->run()) {
+                    $this->data['purchase_form_coins'] = $this->input->post('purchase_form_coins');
                     
-                    if ($redirectpage==''){
-                        $this->load->view('/globals/header', $this->data);
-                        $this->load->view('purchase', $this->data);                        
-                    }
-                    else{
-                        $this->load->view('/globals/header', $this->data);
-                        $this->load->view('payum', $this->data);                        
-                    }                
+                    $this->data['amount'] = $this->input->post('purchase_form_amount');
+                    $this->data['firstname'] = 'Rajul';
+                    $this->data['email'] = 'rajuldm@gmail.com';
+                    $this->data['phone'] = '9820031191';
+                    $this->data['productinfo'] = 'Test Product';
+                    $this->data['surl'] = base_url().'purchase/payum_payment_success.php';
+                    $this->data['furl'] = base_url().'purchase/payum_payment_failure.php';
+
+                    $this->data['key'] = 'Sv6Ywd7n';
+                    $this->data['SALT'] = 'GguFpaTo3k';
+                    $this->data['txnid'] = substr(hash('sha256', mt_rand() . microtime()), 0, 20);
+
+
+                    $redirectpage = 'true';
+                }
+                else {
+                    $redirectpage = 'false';
+                }
+
+                if ($redirectpage=='false'){
+                    $this->load->view('/globals/header', $this->data);
+                    $this->load->view('purchase', $this->data);                        
+                }
+                else if($redirectpage=='true') {
+                    $this->load->view('/globals/header', $this->data);
+                    $this->load->view('payum', $this->data);                        
+                }                
             }
             
             
