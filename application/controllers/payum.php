@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Purchase extends __APP__
+class Payum extends __APP__
 {
 
     
@@ -9,75 +9,10 @@ class Purchase extends __APP__
             if (!$this->tank_auth->is_logged_in()) {
                     redirect('/auth/login/');
             } else {
-                redirect('/purchase/purchasecoins/');
+                
             }
 	}
         
-       
-        public function purchasecoins()
-        {
-            if (!$this->tank_auth->is_logged_in()) {
-                    redirect('/auth/login/');
-            } else {
-                $redirectpage = '';
-                
-                    $this->data['user_id'] = $this->tank_auth->get_user_id();
-                    $this->data['username'] = $this->tank_auth->get_username();
-                    
-                    $this->form_validation->set_rules('purchase_form_amount', 'Amount', 'trim|required|xss_clean|numeric');
-                    $this->form_validation->set_rules('purchase_form_coins', 'Coins', 'trim|required|xss_clean|numeric');
-
-                    if ($this->form_validation->run()) {
-                        $this->data['amount'] = $this->input->post('purchase_form_amount');
-                        $this->data['purchase_form_coins'] = $this->input->post('purchase_form_coins');
-                        
-                        $this->data['firstname'] = 'Rajul';
-                        $this->data['email'] = 'rajuldm@gmail.com';
-                        $this->data['phone'] = '9820031191';
-                        $this->data['productinfo'] = 'Test Product';
-                        $this->data['surl'] = base_url().'purchase/payum_payment_success.php';
-                        $this->data['furl'] = base_url().'purchase/payum_payment_failure.php';
-
-                        $this->data['key'] = 'Sv6Ywd7n';
-                        $this->data['SALT'] = 'GguFpaTo3k';
-                        $this->data['txnid'] = substr(hash('sha256', mt_rand() . microtime()), 0, 20);
-            
-            
-                        $redirectpage = 'true';
-                    }
-                    
-                    if ($redirectpage==''){
-                        $this->load->view('/globals/header', $this->data);
-                        $this->load->view('purchase', $this->data);                        
-                    }
-                    else{
-                        $this->load->view('/globals/header', $this->data);
-                        $this->load->view('payum', $this->data);                        
-                    }                
-            }
-            
-            
-            /*
-            $user_payments_insert = array('user_id' => $this->tank_auth->get_user_id(),
-                                            'amount'=>$payment_amount,
-                                            'added_date' => date('Y-m-d H:i:s'),
-                                            'updated_date' => date('Y-m-d H:i:s')
-                                            );                                        
-            $this->db->insert('user_payments',$user_payments_insert);
-            
-            
-            $this->data['current_coins_count'] = $this->user_details->where('user_id',$this->tank_auth->get_user_id())->get();
-            foreach($this->data['current_coins_count'] as $row)
-            {
-                $current_coins_count = $row->user_coins;
-            }
-            $total_coins_count = $current_coins_count + $coins;
-            $this->user_details->where('user_id',$this->tank_auth->get_user_id())->update('user_coins',$total_coins_count);
-            
-            redirect('/home/');
-             * 
-             */
-        }
         
         public function payum_payment()
         {            

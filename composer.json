@@ -2,7 +2,7 @@
     "name": "rajuldm/gograbit",
     "require": {
 		"facebook/php-sdk-v4" : "4.0.*",
-                "neerajsohal/amplifier": "dev-master"
+		"facebook/php-sdk" : "3.2.3"               
     },
     "minimum-stability": "dev"
 }

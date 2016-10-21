@@ -38,7 +38,7 @@ $contact_number = array(
 	'name'	=> 'contact_number',
 	'id'	=> 'contact_number',
 	'value'	=> set_value('contact_number'),
-	'maxlength'	=> 15,
+	'maxlength'	=> 10,
 	'size'	=> 30,
 );
 $address = array(
@@ -60,6 +60,14 @@ $last_name = array(
 	'id'	=> 'last_name',
 	'value'	=> set_value('last_name'),
 	'maxlength'	=> 30,
+	'size'	=> 30,
+);
+
+$referral_code = array(
+	'name'	=> 'referral_code',
+	'id'	=> 'referral_code',
+	'value'	=> set_value('referral_code'),
+	'maxlength'	=> 10,
 	'size'	=> 30,
 );
 ?>
@@ -100,14 +108,20 @@ $last_name = array(
 	<tr>
 		<td><?php echo form_label('Mobile Number', $contact_number['id']); ?></td>
 		<td><?php echo form_input($contact_number); ?></td>
-		<td style="color: red;"><?php echo form_error($contact_number['name']); ?></td>
+		<td style="color: red;"><?php echo form_error($contact_number['name']); ?><?php echo isset($mobile_exists_error)?$mobile_exists_error:''; ?></td>
 	</tr>
 	<tr>
 		<td><?php echo form_label('Address', $address['id']); ?></td>
 		<td><?php echo form_textarea($address); ?></td>
 		<td style="color: red;"><?php echo form_error($address['name']); ?></td>
 	</tr>
-
+        
+	<tr>
+		<td><?php echo form_label('Referral code', $referral_code['id']); ?></td>
+		<td><?php echo form_input($referral_code); ?></td>
+		<td style="color: red;"><?php echo form_error($referral_code['name']); ?></td>
+	</tr>
+        
 	<?php if ($captcha_registration) {
 		if ($use_recaptcha) { ?>
 	<tr>

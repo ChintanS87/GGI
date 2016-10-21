@@ -138,9 +138,10 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email');
 			$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
 			$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|xss_clean|matches[password]');
-                        $this->form_validation->set_rules('contact_number', 'Mobile Number', 'trim|required|xss_clean|numeric');
+                        $this->form_validation->set_rules('contact_number', 'Mobile Number', 'trim|required|xss_clean|numeric|min_length[10]|max_length[10]');
                         $this->form_validation->set_rules('address', 'Address', 'trim|required|xss_clean|alpha_dash');
-
+                        $this->form_validation->set_rules('referral_code', 'Referral Code', 'trim|xss_clean|numeric|min_length[10]|max_length[10]');
+                        
 			$captcha_registration	= $this->config->item('captcha_registration', 'tank_auth');
 			$use_recaptcha			= $this->config->item('use_recaptcha', 'tank_auth');
 			if ($captcha_registration) {
@@ -155,6 +156,12 @@ class Auth extends CI_Controller
 			$email_activation = $this->config->item('email_activation', 'tank_auth');
 
 			if ($this->form_validation->run()) {								// validation ok
+                            $this->user_details = new User_Details();
+                            if(!$this->user_details->is_mobile_available($this->input->post('contact_number'))) {
+                                $data['mobile_exists_error']="Mobile Number is already used by another user. Please choose another Mobile Number.";
+                            }
+                            else{
+                                $data['mobile_exists_error']="";
 				if (!is_null($data = $this->tank_auth->create_user(
 						$use_username ? $this->form_validation->set_value('username') : '',
 						$this->form_validation->set_value('email'),
@@ -175,11 +182,18 @@ class Auth extends CI_Controller
                                             'last_name'=> $this->input->post('last_name'),
                                             'contact_number' => $this->input->post('contact_number'),
                                             'address' => $this->input->post('address'),
-                                            'user_coins' => 10,
                                             'added_date' => date('Y-m-d H:i:s'),
                                             'updated_date' => date('Y-m-d H:i:s')
                                             );                                        
                                         $this->db->insert('user_details',$user_details_insert);
+                                        
+                                        $user_coins_insert = array('user_id' => $userid_insert,
+                                            'coins'=> 10,
+                                            'source' => 'REG',
+                                            'added_date' => date('Y-m-d H:i:s'),
+                                            'updated_date' => date('Y-m-d H:i:s')
+                                            );                                        
+                                        $this->db->insert('user_coins',$user_coins_insert);
                                         /*added by rajul end*/
                                         
                                         
@@ -207,7 +221,9 @@ class Auth extends CI_Controller
 					$errors = $this->tank_auth->get_error_message();
 					foreach ($errors as $k => $v)	$data['errors'][$k] = $this->lang->line($v);
 				}
+                            }
 			}
+                        
 			if ($captcha_registration) {
 				if ($use_recaptcha) {
 					$data['recaptcha_html'] = $this->_create_recaptcha();

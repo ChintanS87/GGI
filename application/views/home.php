@@ -13,14 +13,16 @@ if ($loggedin=='true')
     echo anchor('/auth/logout/', 'Logout');
     echo "<br/><br/>";
     echo "Available coins ";
+    
         foreach($user_coins as $row) {        
-            echo $row->user_coins;
+            echo $row->coins;
         }
+     
     //echo anchor('/auth/register/', 'Register Now');
     echo "<br/><br/>";
     echo anchor('/purchase/', 'Buy Coins');
     echo "<br/><br/>";
-    echo anchor('', 'Refer a friend');
+    echo anchor('/refer/', 'Refer a friend');
     echo "<br/><br/>";    
 }
 else
@@ -28,8 +30,6 @@ else
     echo anchor('/auth/login/', 'Login');
     echo "<br/><br/>";
     echo anchor('/auth/register/', 'Register Now');
-    echo "<br/><br/>";
-    echo anchor('', 'Refer a friend');
     echo "<br/><br/>";
 }
 

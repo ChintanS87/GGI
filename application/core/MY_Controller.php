@@ -48,6 +48,7 @@ class __APP__ extends CI_Controller {
                 $this->auction = new Auction();
                 $this->user_details = new User_Details();
                 $this->payments = new Payments();
+                $this->user_coins = new User_Coins();
 
 /*                
 		$this->user = new User();
