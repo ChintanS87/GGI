@@ -63,10 +63,10 @@ $last_name = array(
 	'size'	=> 30,
 );
 
-$referral_code = array(
-	'name'	=> 'referral_code',
-	'id'	=> 'referral_code',
-	'value'	=> set_value('referral_code'),
+$referal_code = array(
+	'name'	=> 'referal_code',
+	'id'	=> 'referal_code',
+	'value'	=> set_value('referal_code'),
 	'maxlength'	=> 10,
 	'size'	=> 30,
 );
@@ -117,9 +117,9 @@ $referral_code = array(
 	</tr>
         
 	<tr>
-		<td><?php echo form_label('Referral code', $referral_code['id']); ?></td>
-		<td><?php echo form_input($referral_code); ?></td>
-		<td style="color: red;"><?php echo form_error($referral_code['name']); ?></td>
+		<td><?php echo form_label('Referal code', $referal_code['id']); ?></td>
+		<td><?php echo form_input($referal_code); ?></td>
+		<td style="color: red;"><?php echo form_error($referal_code['name']); ?><?php echo isset($referal_error)?$referal_error:''; ?></td>
 	</tr>
         
 	<?php if ($captcha_registration) {

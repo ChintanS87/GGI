@@ -140,7 +140,7 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|xss_clean|matches[password]');
                         $this->form_validation->set_rules('contact_number', 'Mobile Number', 'trim|required|xss_clean|numeric|min_length[10]|max_length[10]');
                         $this->form_validation->set_rules('address', 'Address', 'trim|required|xss_clean|alpha_dash');
-                        $this->form_validation->set_rules('referral_code', 'Referral Code', 'trim|xss_clean|numeric|min_length[10]|max_length[10]');
+                        $this->form_validation->set_rules('referal_code', 'Referal Code', 'trim|xss_clean|alpha_numeric|min_length[6]|max_length[6]');
                         
 			$captcha_registration	= $this->config->item('captcha_registration', 'tank_auth');
 			$use_recaptcha			= $this->config->item('use_recaptcha', 'tank_auth');
@@ -156,11 +156,30 @@ class Auth extends CI_Controller
 			$email_activation = $this->config->item('email_activation', 'tank_auth');
 
 			if ($this->form_validation->run()) {								// validation ok
+                             
+                            $referal_active="false";
+                            if($this->input->post('referal_code')!=""){                                
+                                $query_referal = $this->db->query("Select * from referals where referal_code='".$this->input->post('referal_code')."' and referred_mobile ='".$this->input->post('contact_number')."' and referal_status='O'");                                    
+                                if ($query_referal->num_rows() == 1){
+                                    $row_referal = $query_referal->row();
+                                    if (isset($row_referal)){
+                                         $referal_tbl_id = $row_referal->id;
+                                         $referer_user_id = $row_referal->referer_user_id;
+                                         $referer_mobile = $row_referal->referer_mobile;
+                                         $referal_active="true";
+                                    }                                    
+                                }
+                            }
+                            
                             $this->user_details = new User_Details();
                             if(!$this->user_details->is_mobile_available($this->input->post('contact_number'))) {
                                 $data['mobile_exists_error']="Mobile Number is already used by another user. Please choose another Mobile Number.";
+                            }elseif($this->input->post('referal_code')!="" && $referal_active!="true")
+                            {
+                                $data['referal_error']="Invalid referal code for given Mobile Number";
                             }
                             else{
+                                $data['referal_error']="";
                                 $data['mobile_exists_error']="";
 				if (!is_null($data = $this->tank_auth->create_user(
 						$use_username ? $this->form_validation->set_value('username') : '',
@@ -194,7 +213,27 @@ class Auth extends CI_Controller
                                             'updated_date' => date('Y-m-d H:i:s')
                                             );                                        
                                         $this->db->insert('user_coins',$user_coins_insert);
-                                        /*added by rajul end*/
+                                        
+                                        if($referal_active=="true"){
+                                            $referer_coins_insert = array('user_id' => $referer_user_id,
+                                                'coins'=> 10,
+                                                'source' => 'REF',
+                                                'added_date' => date('Y-m-d H:i:s'),
+                                                'updated_date' => date('Y-m-d H:i:s')
+                                                );                                        
+                                            $this->db->insert('user_coins',$referer_coins_insert);
+
+                                            $referred_coins_insert = array('user_id' => $userid_insert,
+                                                'coins'=> 10,
+                                                'source' => 'REF',
+                                                'added_date' => date('Y-m-d H:i:s'),
+                                                'updated_date' => date('Y-m-d H:i:s')
+                                                );                                        
+                                            $this->db->insert('user_coins',$referred_coins_insert); 
+                                            $this->referals = new Referals();
+                                            $this->referals->where('id',$referal_tbl_id)->update('referal_status','C');                                            
+                                        }
+                                       /*added by rajul end*/
                                         
                                         
 					$data['site_name'] = $this->config->item('website_name', 'tank_auth');

@@ -14,10 +14,26 @@ $refer_num = array(
 <?php echo form_open($this->uri->uri_string()); ?>
 <table>
     <tr>
+        <td colspan="3" style="color: red;">
+            <?php
+                if ($success_msg !="")
+                    echo $success_msg;
+            ?>
+        </td>
+    </tr>    
+    <tr>
         <td><?php echo form_label('Referal Number', $refer_num['id']); ?></td>
         <td><?php echo form_input($refer_num); ?></td>
         <td style="color: red;"><?php echo form_error($refer_num['name']); ?></td>
-    </tr>   
+    </tr>  
+    <tr>
+        <td colspan="3" style="color: red;">
+            <?php
+                if ($error_msg !="")
+                    echo $error_msg;
+            ?>
+        </td>
+    </tr>
 </table>
 
 

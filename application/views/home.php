@@ -7,6 +7,7 @@ Hi, <strong>
 -->
 
 
+
 <?php
 if ($loggedin=='true')
 {
@@ -23,7 +24,9 @@ if ($loggedin=='true')
     echo anchor('/purchase/', 'Buy Coins');
     echo "<br/><br/>";
     echo anchor('/refer/', 'Refer a friend');
-    echo "<br/><br/>";    
+    echo "<br/><br/>";
+    echo anchor('/freecoin/', 'Get Daily Free Coin');
+    echo "<br/><br/>";
 }
 else
 {
