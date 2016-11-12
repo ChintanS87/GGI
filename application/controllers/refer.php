@@ -48,20 +48,13 @@ class Refer extends __APP__
                     $this->db->insert('referals',$referals_insert);        
                     
                     
-                    // Replace with your username
-                    $user = "rajul";
-                    // Replace with your API KEY (We have sent API KEY on activation email, also available on panel)
+                    
+                    $user = "Rajul";
                     $password = "rajul";
-                    // Replace with the destination mobile Number to which you want to send sms
                     $msisdn = $this->input->post('refer_num');
-                    // Replace if you have your own Six character Sender ID, or check with our support team.
                     $sid = "SMSHUB";
-                    // Replace with client name
-                    $NAME = "Anurag Sharrma";
-                    // Replace if you have OTP in your template.
                     $OTP = $this->data['OTP'];
-                    // Replace with your Message content
-                    $msg = "Your Referal Code for gograbit.in is : ##OTP##";
+                    $msg = "Dear USER, your password is ".$OTP;
                     $msg = urlencode($msg);
                     // Keep 0 if you don’t want to flash the message
                     $fl = "0";
@@ -69,11 +62,11 @@ class Refer extends __APP__
                     $gwid = "2";
                     // For Plain Text, use "txt" ; for Unicode symbols or regional Languages like hindi/tamil/kannada use "uni"
                     $type = "txt";
-                    $ch =
-                    curl_init("http://cloud.smsindiahub.in/vendorsms/pushsms.aspx?user=".$user."&password=".$password."&ms
-                    isdn=".$msisdn."&sid=".$sid."&msg=".$msg."&fl=".$fl."&gwid=".$gwid."");
-                     curl_setopt($ch, CURLOPT_HEADER, 0);
-                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    $ch = curl_init("http://cloud.smsindiahub.in/vendorsms/pushsms.aspx?user=".$user."&password=".$password."&msisdn=".$msisdn."&sid=".$sid."&msg=".$msg."&fl=".$fl."&gwid=".$gwid."");
+                    
+                    //$ch = curl_init("http://cloud.smsindiahub.in/vendorsms/pushsms.aspx?user=Rajul&password=rajul&msisdn=9820031191&sid=SMSHUB&msg=Dear ANJALI, your password is 1234.&fl=0&gwid=2");
+                    curl_setopt($ch, CURLOPT_HEADER, 0);                     
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                      $output = curl_exec($ch);
                      curl_close($ch);
                     // Display MSGID of the successful sms push

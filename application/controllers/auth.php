@@ -201,6 +201,8 @@ class Auth extends CI_Controller
                                             'last_name'=> $this->input->post('last_name'),
                                             'contact_number' => $this->input->post('contact_number'),
                                             'address' => $this->input->post('address'),
+                                            'user_coins'=> 10,
+                                            'user_type'=> 'F',
                                             'added_date' => date('Y-m-d H:i:s'),
                                             'updated_date' => date('Y-m-d H:i:s')
                                             );                                        

@@ -4,7 +4,7 @@ class Auction extends DataMapper {
 
 	var $model = 'auction';
 	var $table = 'auction_details';
-	var $has_one = array();
+	var $has_one = array('product');
         var $has_many = array();
 	
     function __construct($id = NULL) {

@@ -175,7 +175,10 @@ public function sendemail(){
 		redirect('home/index');
 	}    
     
-    
+    public function nodetest()
+    {  
+        $this->load->view('test');
+    }    
       
 }
 
