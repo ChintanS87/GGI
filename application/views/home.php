@@ -9,7 +9,7 @@
               <?php
                  $ctr=0; foreach ($live_products as $row) { $ctr++;                  
                     echo "$('#bid_".$row['auction_id']."').click(function(){";
-                    echo "socket.emit('resetTimer_".$row['auction_id']."',$('#timer_".$row['auction_id']."').val());";
+                    echo "socket.emit('Userbid',{auction_id:".$row['auction_id'].",user_id:".$userid."});";
                     echo "});";
               
                     echo "socket.on('updateTimer_".$row['auction_id']."',function(timerVal){";                    
@@ -60,27 +60,6 @@ else
 
 ?>
 
-
-<?php
-
-    $strArray = "";
-    $ctr_live_prod=0; 
-    foreach ($live_products as $row) { 
-        $ctr_live_prod++; 
-        $strArray = $strArray .'{';
-        $strArray = $strArray .'"auction_id":'.$row['auction_id'].',';
-        $strArray = $strArray .'"auction_time_secs":'.$row['auction_time_secs'];
-        if($ctr_live_prod == $num_of_live_products) { $strArray = $strArray .'}'; }
-        else { $strArray = $strArray .'},'; }
-                                                
-        //$row['coins_per_bid']
-        //$row['prod_cost']        
-     }
-    echo $strArray;
-?>
-    
-    
-<span id="timer"></span><br/>
 
 <b>Live Products</b><br/>
 <?php

@@ -20,7 +20,7 @@ class Home extends __APP__
         $this->db->where('a.is_active','Y');
         $query_live = $this->db->get();
         $this->data['live_products'] = $query_live->result_array();
-        $this->data['num_of_live_products'] = $query_live->num_rows();
+        //$this->data['num_of_live_products'] = $query_live->num_rows();
         
         
         $this->db->select('*');

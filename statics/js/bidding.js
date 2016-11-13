@@ -32,14 +32,8 @@ app.get("/",function(req,res){
 io.on('connection',function(socket){  
     console.log("A user is connected");
                
-    socket.on('resetTimer',function(status){
-      reset_timer(status,function(res){
-        if(res){
-            io.emit('updateTimer',status);
-        } else {
-            io.emit('error');
-        }
-      });
+    socket.on('Userbid',function(data){
+        UserBid(data);
     });
     
     
@@ -113,7 +107,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
                             }
                             else{
                                 //system bid
-                                SystemBid(auction_id,myCounter,product_cost,auction_secs);
+                                SystemBid(auction_id,myCounter,product_cost,auction_secs,coins_per_bid);
                             }                            
                         }
                         if (WinningUserType === 'S'){
@@ -122,7 +116,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
                     }
                     else{
                         //Do System Bid
-                        SystemBid(auction_id,myCounter,product_cost,auction_secs);
+                        SystemBid(auction_id,myCounter,product_cost,auction_secs,coins_per_bid);
                     }
                 }
                 else{
@@ -138,7 +132,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
 }
 
 
-function SystemBid(auction_id,myCounter,product_cost,auction_secs){
+function SystemBid(auction_id,myCounter,product_cost,auction_secs,coins_per_bid){
     pool.getConnection(function(err,connection){
         if (err) {
           console.log('error System Bid');  
@@ -149,7 +143,7 @@ function SystemBid(auction_id,myCounter,product_cost,auction_secs){
         {
             connection.release();
             if(!err) {
-                reset_timer(auction_id, myCounter,product_cost,auction_secs);
+                reset_timer(auction_id, myCounter,product_cost,auction_secs,coins_per_bid);
                 //return true;
             }
             else{
@@ -161,7 +155,19 @@ function SystemBid(auction_id,myCounter,product_cost,auction_secs){
 }
 
 
-function reset_timer(auction_id,myCounter,product_cost,auction_secs){    
+function UserBid(data){
+    var auction_id = data.auction_id;
+    var user_id = data.user_id;
+    
+    if (user_id === ''){
+        alert('Please Login to Start bidding');
+    }else{
+        
+    }
+}
+
+
+function reset_timer(auction_id,myCounter,product_cost,auction_secs,coins_per_bid){    
     pool.getConnection(function(err,connection){
         if (err) {
           console.log('error System Bid');  
@@ -174,7 +180,7 @@ function reset_timer(auction_id,myCounter,product_cost,auction_secs){
             if(!err) {
                 total_coins = rows[0].bidCount * coins_per_bid;
                 total_collected = total_coins * 3;                
-                percentCTC = 100*total_collected/ product_cost;
+                percentCTC = 100*total_collected / product_cost;
                 if(percentCTC < 25){
                     NewSeconds = auction_secs;
                 }else if (percentCTC >= 25 && percentCTC< 50){
