@@ -31,7 +31,7 @@ app.get("/",function(req,res){
 /*  This is auto initiated event when Client connects to Your Machine.*/
 io.on('connection',function(socket){  
     console.log("A user is connected");
-               
+        
     socket.on('Userbid',function(data){
         UserBid(data);
     });
@@ -76,6 +76,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
         var SysBid = arrLiveAuctions[i].auction_system_bid;
         var AllowFreeUserWin = arrLiveAuctions[i].auction_allow_free_user_win;
         var auction_secs = arrLiveAuctions[i].auction_time_secs;
+        
         
         myCounter  = new Countdown({  
             seconds:auction_secs,
@@ -128,9 +129,13 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
             }
         });         
         myCounter.start(auction_secs);
+        
     }            
 }
 
+
+
+/* System Bidding and Checks - start */
 
 function SystemBid(auction_id,myCounter,product_cost,auction_secs,coins_per_bid){
     pool.getConnection(function(err,connection){
@@ -155,17 +160,6 @@ function SystemBid(auction_id,myCounter,product_cost,auction_secs,coins_per_bid)
 }
 
 
-function UserBid(data){
-    var auction_id = data.auction_id;
-    var user_id = data.user_id;
-    
-    if (user_id === ''){
-        alert('Please Login to Start bidding');
-    }else{
-        
-    }
-}
-
 
 function reset_timer(auction_id,myCounter,product_cost,auction_secs,coins_per_bid){    
     pool.getConnection(function(err,connection){
@@ -180,7 +174,7 @@ function reset_timer(auction_id,myCounter,product_cost,auction_secs,coins_per_bi
             if(!err) {
                 total_coins = rows[0].bidCount * coins_per_bid;
                 total_collected = total_coins * 3;                
-                percentCTC = 100*total_collected / product_cost;
+                percentCTC = 100*total_collected/ product_cost;
                 if(percentCTC < 25){
                     NewSeconds = auction_secs;
                 }else if (percentCTC >= 25 && percentCTC< 50){
@@ -273,6 +267,165 @@ function checkCTCSysBid(auction_id, product_cost,coins_per_bid)
         });
     });        
 }
+
+/* System Bidding and Checks - end */
+
+
+
+
+
+
+
+
+/* User Bidding - start */
+
+function UserBid(data){
+    var auction_id = data.auction_id;
+    var user_id = data.user_id;
+    
+    if (user_id === 0){
+        io.emit('userMsg','Please Login to Start bidding');
+    }else{
+        BidClick(auction_id,user_id);
+    }
+}
+
+
+function BidClick(auction_id,user_id){
+    var coins_per_bid;
+    var max_value;
+    var current_max_value;
+    var display_max_value;
+    var user_coins;
+    var username;
+
+    pool.getConnection(function(err,connection){
+        if (err) {
+          console.log('error Bid Click');  
+          //return false;
+        }        
+        connection.query("Select * from auction_details where auction_id ="+auction_id,function(err,rows)
+        {
+            connection.release();
+            if(!err) {
+                if(rows.length === 1){
+                    coins_per_bid = rows[0].coins_per_bid;
+                    max_value = rows[0].max_value;
+                    current_max_value = rows[0].current_max_value;
+                    display_max_value = rows[0].current_max_value;                    
+                }
+            }
+            else{
+                console.log('error Bid Click'); 
+                //return false;                 
+            }
+        });             
+    });
+
+    pool.getConnection(function(err,connection){
+        if (err) {
+          console.log('error Bid Click');  
+          //return false;
+        }     
+        connection.query("Select * from user_details where user_id ="+user_id,function(err,rows)
+        {
+            connection.release();
+            if(!err) {
+                if(rows.length === 1){
+                    user_coins = rows[0].user_coins;
+                    username = rows[0].first_name;
+                }
+            }
+            else{
+                console.log('error Bid Click'); 
+                //return false;                 
+            }
+        });       
+    }); 
+    
+    //console.log(coins_per_bid);
+    //console.log(max_value);
+    //console.log(current_max_value);
+    //console.log(display_max_value);        
+    console.log(user_coins);
+    console.log(username);        
+
+        
+        
+    if (user_coins >= coins_per_bid){
+        pool.getConnection(function(err,connection){
+            if (err) {
+              console.log('error Bid Click');  
+              //return false;
+            }        
+            connection.query("Update user_details SET user_coins=user_coins-"+coins_per_bid+" Where user_id="+user_id,function(err,rows)
+            {
+                connection.release();
+                if(!err) {
+
+                }
+                else{
+                    console.log('error Bid Click'); 
+                    //return false;                 
+                }
+            });
+        });
+        pool.getConnection(function(err,connection){
+            if (err) {
+              console.log('error Bid Click');  
+              //return false;
+            }        
+            connection.query("INSERT INTO `user_bids`(`auction_id`, `user_id`, `system_user`, `added_date`, `updated_date`) VALUES ("+auction_id+","+user_id+",'N',now(),now())",function(err,rows)
+            {
+                connection.release();
+                if(!err) {
+
+                }
+                else{
+                    console.log('error Bid Click'); 
+                    //return false;                 
+                }
+            });
+        });
+        
+        if(current_max_value < max_value){
+            pool.getConnection(function(err,connection){
+                if (err) {
+                  console.log('error Bid Click');  
+                  //return false;
+                }            
+                connection.query("Update auction_details SET current_max_value=current_max_value+0.01 Where auction_id="+auction_id,function(err,rows)
+                {
+                    connection.release();
+                    if(!err) {
+
+                    }
+                    else{
+                        console.log('error Bid Click'); 
+                        //return false;                 
+                    }
+                });  
+            });    
+            display_max_value=current_max_value+0.01;
+        }                  
+       
+
+        
+        io.emit('CurrentMaxValue_'+auction_id, display_max_value);
+        io.emit('CurrentWinningBidder_'+auction_id, username);
+        
+    }
+    else{
+        io.emit('userMsg','You do not have enough coins to bid for this Auction. Please purchase new coins to continue bidding.');
+    }
+}
+
+
+/* User Bidding - end */
+
+
+
+
 
 
 

@@ -7,16 +7,30 @@
                  var socket = io.connect('http://localhost:3000');               
                     
               <?php
+                if ($loggedin=='true'){
+                    $userid_final = $userid;
+                }
+                else{
+                    $userid_final = 0;                    
+                }
                  $ctr=0; foreach ($live_products as $row) { $ctr++;                  
                     echo "$('#bid_".$row['auction_id']."').click(function(){";
-                    echo "socket.emit('Userbid',{auction_id:".$row['auction_id'].",user_id:".$userid."});";
+                    echo "socket.emit('Userbid',{auction_id:".$row['auction_id'].",user_id:".$userid_final."});";
                     echo "});";
               
                     echo "socket.on('updateTimer_".$row['auction_id']."',function(timerVal){";                    
                     echo "$('#timer_".$row['auction_id']."').text(timerVal);});";
+                    
+                    echo "socket.on('CurrentMaxValue_".$row['auction_id']."',function(maxVal){";                    
+                    echo "$('#CurrentMaxValue_".$row['auction_id']."').text(maxVal);});";
+                    
+                    echo "socket.on('CurrentWinningBidder_".$row['auction_id']."',function(BidderVal){";                    
+                    echo "$('#CurrentWinningBidder_".$row['auction_id']."').text(BidderVal);});";
                  }
               ?>
-                      
+                socket.on('userMsg',function(MsgText){
+                    alert(MsgText);
+                });      
                 /*
                 $('#bid_1').click(function(){
                     socket.emit('resetTimer_1',$('#timer_1').val());
@@ -70,7 +84,16 @@ echo "Product Name ". $row['prod_name'];
 echo "<br/>";
 echo "Product Description ".$row['prod_desc'];
 echo "<br/>";
-echo "Product Cost ".$row['prod_cost'];
+echo "Product MRP ".$row['prod_MRP'];
+echo "<br/>";
+echo "Coins Per Bid ".$row['coins_per_bid'];
+echo "<br/><br/>";
+
+
+echo "Current Value Rs";
+echo '<div><span id="CurrentMaxValue_'.$row['auction_id'].'">'.$row['current_max_value'].'</span></div>';
+echo "Current Winning Bidder";
+echo '<div><span id="CurrentWinningBidder_'.$row['auction_id'].'"></span></div>';
 echo "<br/>";
 
 echo '<div><span id="timer_'.$row['auction_id'].'"></span><br/>';
@@ -88,7 +111,7 @@ echo "Product Name ".$row['prod_name'];
 echo "<br/>";
 echo "Product Description ".$row['prod_desc'];
 echo "<br/>";
-echo "Product Cost ".$row['prod_cost'];
+echo "Product MRP ".$row['prod_MRP'];
 echo "<br/>";
  }
 ?> 
@@ -102,7 +125,7 @@ echo "Product Name ".$row['prod_name'];
 echo "<br/>";
 echo "Product Description ".$row['prod_desc'];
 echo "<br/>";
-echo "Product Cost ".$row['prod_cost'];
+echo "Product MRP ".$row['prod_MRP'];
 echo "<br/>";
  } 
 ?>

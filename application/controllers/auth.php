@@ -232,6 +232,11 @@ class Auth extends CI_Controller
                                                 'updated_date' => date('Y-m-d H:i:s')
                                                 );                                        
                                             $this->db->insert('user_coins',$referred_coins_insert); 
+                                            
+                                            $this->user_details->where('user_id',$referer_user_id)->update('user_coins','user_coins +10');
+                                            $this->user_details->where('user_id',$userid_insert)->update('user_coins','user_coins +10');
+
+                    
                                             $this->referals = new Referals();
                                             $this->referals->where('id',$referal_tbl_id)->update('referal_status','C');                                            
                                         }
