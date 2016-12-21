@@ -26,6 +26,7 @@
         <script src="<?= base_url(); ?>statics/vendor/bootstrap/dist/js/bootstrap.min.js"></script>        
         <script src="<?= base_url(); ?>statics/js/main.js"></script>
 
+        <!--<script src="<?= base_url(); ?>statics/vendor/async/dist/async.js"></script>-->
         <script>
             /*
             (function (i, s, o, g, r, a, m) {

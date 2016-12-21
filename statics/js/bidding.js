@@ -11,7 +11,7 @@ var pool    =    mysql.createPool({
       database          :   'gograbit',
       debug             :   false
 });
-
+var async = require('async');
 
 
 
@@ -66,6 +66,8 @@ pool.getConnection(function(err,connection){
     });
 });
 
+
+
 function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {         
     for (var i = 0; i < noOfLiveAuctions; i++) {        
         var myCounter = "myCounter_"+arrLiveAuctions[i].auction_id;
@@ -92,12 +94,27 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
             },
             onCounterEnd: function(){
                 io.emit(updatetimer,'Checking...');
-                //if system bid is on
+                var blnCTCSysBid;
+                var WinningUserType;
+                //if system bid is on                
+                async.series([
+                    function functionOne(callback){
+                        blnCTCSysBid = checkCTCSysBid(auction_id, product_cost,coins_per_bid);
+                    },
+                    function functionTwo(callback){
+                        WinningUserType = checkWinningUserType(auction_id);
+                    }
+                ], function(err, result){
+                    console.log(result);
+                })
+                
                 if (SysBid === 'Y'){
-                    var blnCTCSysBid = checkCTCSysBid(auction_id, product_cost,coins_per_bid);
+                    //var blnCTCSysBid = checkCTCSysBid(auction_id, product_cost,coins_per_bid);
+                    console.log('ctc sytem bid value is '+blnCTCSysBid);
                     // if CTC is recovered
                     if(blnCTCSysBid){
-                        var WinningUserType = checkWinningUserType(auction_id);
+                        //var WinningUserType = checkWinningUserType(auction_id);
+                        console.log('winning user type value is '+WinningUserType);
                         //if free user is winning
                         if (WinningUserType === 'F'){
                             if(AllowFreeUserWin === 'Y'){
@@ -244,24 +261,26 @@ function checkWinningUserType(auction_id){
 
 
 function checkCTCSysBid(auction_id, product_cost,coins_per_bid)
-{       
+{ 
+    var total_coins;
+    var total_collected;
     pool.getConnection(function(err,connection){
         if (err) {
           console.log('error');  
           return false;
         }
         connection.query("Select count(*) as bidCount from user_bids where system_user='N' and auction_id ="+auction_id,function(err,rows)
-        {
+        {            
             connection.release();
-            if(!err) {                
+            if(!err) {
                 total_coins = rows[0].bidCount * coins_per_bid;
                 total_collected = total_coins * 3;                
-                if (total_collected >= product_cost){
-                    return true;
+                if (total_collected >= product_cost){                    
+                    return true;                    
                 }
                 else{
-                    return false;
-                }
+                    return false;                    
+                }                
             }
             else{ return false; }
         });
@@ -286,9 +305,95 @@ function UserBid(data){
     if (user_id === 0){
         io.emit('userMsg','Please Login to Start bidding');
     }else{
-        BidClick(auction_id,user_id);
+        //BidClick(auction_id,user_id);
+        BidClickTemp(auction_id,user_id);
     }
 }
+
+
+
+
+
+function getdata(Qry){
+    pool.getConnection(function(err,connection){
+        if (err) {
+          console.log('error Bid Click');  
+          //return false;
+        }        
+        connection.query(Qry,function(err,rows)
+        {
+            connection.release();
+            if(!err) {
+                if(rows.length === 1){
+                    console.log(rows);
+                    return rows;
+                    //coins_per_bid = rows[0].coins_per_bid;
+                    //max_value = rows[0].max_value;
+                    //current_max_value = rows[0].current_max_value;
+                    //display_max_value = rows[0].current_max_value;                    
+                }
+            }
+            else{
+                console.log('error Bid Click'); 
+                //return false;                 
+            }
+        });             
+    });    
+}
+
+
+
+
+function BidClickTemp(auction_id,user_id){
+    var coins_per_bid;
+    var max_value;
+    var current_max_value;
+    var display_max_value;
+    var user_coins;
+    var username;
+
+
+    async.series([
+        function functionOne(callback){
+            auction_details = getdata("Select * from auction_details where auction_id ="+auction_id);
+            console.log(auction_details);
+            callback(null,'RESULT OF FUNCTION ONE');
+        },
+        function functionTwo(callback){
+            callback(null,'RESULT OF FUNCTION TWO');
+        },
+        function functionThree(callback){
+            callback(null,'RESULT OF FUNCTION THREE');
+        }        
+    ], function(err,result){
+        //console.log(result);
+    })
+/*
+    async.series([
+    getdata("Select * from auction_details where auction_id ="+auction_id),
+    getdata("Select * from user_details where user_id ="+user_id)    
+    ],
+    function (err, result) {
+        console.log(result);
+    });
+  */  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function BidClick(auction_id,user_id){
@@ -298,6 +403,7 @@ function BidClick(auction_id,user_id){
     var display_max_value;
     var user_coins;
     var username;
+
 
     pool.getConnection(function(err,connection){
         if (err) {
@@ -343,10 +449,10 @@ function BidClick(auction_id,user_id){
         });       
     }); 
     
-    //console.log(coins_per_bid);
-    //console.log(max_value);
-    //console.log(current_max_value);
-    //console.log(display_max_value);        
+    console.log(coins_per_bid);
+    console.log(max_value);
+    console.log(current_max_value);
+    console.log(display_max_value);        
     console.log(user_coins);
     console.log(username);        
 

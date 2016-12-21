@@ -28,9 +28,11 @@
                     echo "$('#CurrentWinningBidder_".$row['auction_id']."').text(BidderVal);});";
                  }
               ?>
+                      
                 socket.on('userMsg',function(MsgText){
                     alert(MsgText);
-                });      
+                });
+                
                 /*
                 $('#bid_1').click(function(){
                     socket.emit('resetTimer_1',$('#timer_1').val());
