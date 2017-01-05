@@ -12,7 +12,8 @@ var pool    =    mysql.createPool({
       debug             :   false
 });
 var async = require('async');
-
+var sync = require('synchronize');
+//var wait = require('wait.for');
 
 
 
@@ -35,7 +36,9 @@ io.on('connection',function(socket){
     socket.on('Userbid',function(data){
         UserBid(data);
     });
-    
+    socket.on('UserAutobid',function(data){
+        UserAutoBid(data);
+    });    
     
 });
 
@@ -68,9 +71,11 @@ pool.getConnection(function(err,connection){
 
 
 
-function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {         
-    for (var i = 0; i < noOfLiveAuctions; i++) {        
-        var myCounter = "myCounter_"+arrLiveAuctions[i].auction_id;
+function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
+    var myCounter=[];
+    for (var i = 0; i < noOfLiveAuctions; i++) {  
+        var aucID = arrLiveAuctions[i].auction_id;
+        //var myCounter = "myCounter_"+arrLiveAuctions[i].auction_id;                        
         var updatetimer = 'updateTimer_'+arrLiveAuctions[i].auction_id;        
         var auction_id = arrLiveAuctions[i].auction_id;
         var product_cost = arrLiveAuctions[i].prod_cost;
@@ -80,7 +85,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
         var auction_secs = arrLiveAuctions[i].auction_time_secs;
         
         
-        myCounter  = new Countdown({  
+        myCounter[aucID]  = new Countdown({  
             seconds:auction_secs,
             onUpdateStatus: function(sec){
                 //if hours are added to the bid system..keeping commented code 
@@ -94,26 +99,14 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
             },
             onCounterEnd: function(){
                 io.emit(updatetimer,'Checking...');
-                var blnCTCSysBid;
-                var WinningUserType;
-                //if system bid is on                
-                async.series([
-                    function functionOne(callback){
-                        blnCTCSysBid = checkCTCSysBid(auction_id, product_cost,coins_per_bid);
-                    },
-                    function functionTwo(callback){
-                        WinningUserType = checkWinningUserType(auction_id);
-                    }
-                ], function(err, result){
-                    console.log(result);
-                })
-                
-                if (SysBid === 'Y'){
-                    //var blnCTCSysBid = checkCTCSysBid(auction_id, product_cost,coins_per_bid);
+                //if system bid is on   
+                                
+                if (SysBid === 'Y'){                    
+                    var blnCTCSysBid = checkCTCSysBid(auction_id, product_cost,coins_per_bid);
                     console.log('ctc sytem bid value is '+blnCTCSysBid);
                     // if CTC is recovered
                     if(blnCTCSysBid){
-                        //var WinningUserType = checkWinningUserType(auction_id);
+                        var WinningUserType = checkWinningUserType(auction_id);
                         console.log('winning user type value is '+WinningUserType);
                         //if free user is winning
                         if (WinningUserType === 'F'){
@@ -125,7 +118,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
                             }
                             else{
                                 //system bid
-                                SystemBid(auction_id,myCounter,product_cost,auction_secs,coins_per_bid);
+                                SystemBid(auction_id,myCounter[aucID],product_cost,auction_secs,coins_per_bid);
                             }                            
                         }
                         if (WinningUserType === 'S'){
@@ -134,7 +127,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
                     }
                     else{
                         //Do System Bid
-                        SystemBid(auction_id,myCounter,product_cost,auction_secs,coins_per_bid);
+                        SystemBid(auction_id,myCounter[aucID],product_cost,auction_secs,coins_per_bid);
                     }
                 }
                 else{
@@ -145,7 +138,7 @@ function initialiseCountdown(noOfLiveAuctions, arrLiveAuctions) {
                 }
             }
         });         
-        myCounter.start(auction_secs);
+        myCounter[aucID].start(auction_secs);
         
     }            
 }
@@ -242,16 +235,16 @@ function CloseBid(auction_id){
 
 
 function checkWinningUserType(auction_id){
+    console.log("winning function");
     pool.getConnection(function(err,connection){
         if (err) {
           console.log('error');  
           return false;
         }
-        
         connection.query("SELECT * FROM user_details WHERE user_id in (SELECT user_id FROM user_bids WHERE auction_id ="+auction_id+" ORDER BY bid_id DESC LIMIT 1)",function(err,rows)
         {
             connection.release();
-            if(!err) {                                                
+            if(!err) {
                 return rows[0].user_type;
             }
             else{ return false; }
@@ -260,14 +253,15 @@ function checkWinningUserType(auction_id){
 }
 
 
-function checkCTCSysBid(auction_id, product_cost,coins_per_bid)
+function checkCTCSysBid(auction_id, product_cost,coins_per_bid, callback)
 { 
     var total_coins;
     var total_collected;
     pool.getConnection(function(err,connection){
         if (err) {
           console.log('error');  
-          return false;
+          //return false;
+          callback(err,null);
         }
         connection.query("Select count(*) as bidCount from user_bids where system_user='N' and auction_id ="+auction_id,function(err,rows)
         {            
@@ -275,14 +269,15 @@ function checkCTCSysBid(auction_id, product_cost,coins_per_bid)
             if(!err) {
                 total_coins = rows[0].bidCount * coins_per_bid;
                 total_collected = total_coins * 3;                
-                if (total_collected >= product_cost){                    
-                    return true;                    
+                if (total_collected >= product_cost){
+                    //return true;
+                    callback(null,500);
                 }
                 else{
-                    return false;                    
+                    //return false;                    
                 }                
             }
-            else{ return false; }
+            else{ callback(err,null); }
         });
     });        
 }
@@ -291,6 +286,41 @@ function checkCTCSysBid(auction_id, product_cost,coins_per_bid)
 
 
 
+
+/* User AutoBidding - start */
+
+function UserAutoBid(data){
+    var auction_id = data.auction_id;
+    var user_id = data.user_id;
+    
+    if (user_id === 0){
+        io.emit('userMsg','Please Login to Start bidding');
+    }else{
+        pool.getConnection(function(err,connection){
+            if (err) {
+              console.log('error AutoBid Click');  
+              //return false;
+            }        
+            connection.query("INSERT INTO `autobid`(`auction_id`, `user_id`, `active_flag`,`bid_flag`, `added_date`, `updated_date`) VALUES ("+auction_id+","+user_id+",'Y','Y',now(),now())",function(err,rows)
+            {
+                connection.release();
+                if(!err) {
+                    if(rows.length === 1){
+                        console.log(rows);
+                        return rows;
+                    }
+                }
+                else{
+                    console.log('error AutoBid Click'); 
+                    //return false;                 
+                }
+            });             
+        });  
+
+    }
+}
+
+/* User AutoBidding - end */
 
 
 
@@ -305,15 +335,15 @@ function UserBid(data){
     if (user_id === 0){
         io.emit('userMsg','Please Login to Start bidding');
     }else{
-        //BidClick(auction_id,user_id);
-        BidClickTemp(auction_id,user_id);
+        BidClick(auction_id,user_id);
+        //BidClickTemp(auction_id,user_id);
     }
 }
 
 
 
 
-
+/*
 function getdata(Qry){
     pool.getConnection(function(err,connection){
         if (err) {
@@ -340,57 +370,7 @@ function getdata(Qry){
         });             
     });    
 }
-
-
-
-
-function BidClickTemp(auction_id,user_id){
-    var coins_per_bid;
-    var max_value;
-    var current_max_value;
-    var display_max_value;
-    var user_coins;
-    var username;
-
-
-    async.series([
-        function functionOne(callback){
-            auction_details = getdata("Select * from auction_details where auction_id ="+auction_id);
-            console.log(auction_details);
-            callback(null,'RESULT OF FUNCTION ONE');
-        },
-        function functionTwo(callback){
-            callback(null,'RESULT OF FUNCTION TWO');
-        },
-        function functionThree(callback){
-            callback(null,'RESULT OF FUNCTION THREE');
-        }        
-    ], function(err,result){
-        //console.log(result);
-    })
-/*
-    async.series([
-    getdata("Select * from auction_details where auction_id ="+auction_id),
-    getdata("Select * from user_details where user_id ="+user_id)    
-    ],
-    function (err, result) {
-        console.log(result);
-    });
-  */  
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
 
 
 
@@ -403,14 +383,26 @@ function BidClick(auction_id,user_id){
     var display_max_value;
     var user_coins;
     var username;
+    var product_cost;
+    var auction_secs;
+    var myCounter = "myCounter_"+auction_id;
 
+
+    coins_per_bid = 10;
+    max_value = 10.5;
+    current_max_value=0;
+    display_max_value=current_max_value;
+    user_coins=10;
+    username="rajul";
+    product_cost=50000;
+    auction_secs=30;
 
     pool.getConnection(function(err,connection){
         if (err) {
           console.log('error Bid Click');  
           //return false;
         }        
-        connection.query("Select * from auction_details where auction_id ="+auction_id,function(err,rows)
+        connection.query("Select * from auction_details a, product_details p where p.product_id = a.product_id and a.auction_id ="+auction_id,function(err,rows)
         {
             connection.release();
             if(!err) {
@@ -418,7 +410,9 @@ function BidClick(auction_id,user_id){
                     coins_per_bid = rows[0].coins_per_bid;
                     max_value = rows[0].max_value;
                     current_max_value = rows[0].current_max_value;
-                    display_max_value = rows[0].current_max_value;                    
+                    display_max_value = rows[0].current_max_value;   
+                    auction_secs = rows[0].auction_time_secs;
+                    product_cost = rows[0].prod_cost;
                 }
             }
             else{
@@ -448,15 +442,7 @@ function BidClick(auction_id,user_id){
             }
         });       
     }); 
-    
-    console.log(coins_per_bid);
-    console.log(max_value);
-    console.log(current_max_value);
-    console.log(display_max_value);        
-    console.log(user_coins);
-    console.log(username);        
-
-        
+            
         
     if (user_coins >= coins_per_bid){
         pool.getConnection(function(err,connection){
@@ -516,6 +502,8 @@ function BidClick(auction_id,user_id){
         }                  
        
 
+        //call reset timer
+        reset_timer(auction_id, myCounter[auction_id],product_cost,auction_secs,coins_per_bid);
         
         io.emit('CurrentMaxValue_'+auction_id, display_max_value);
         io.emit('CurrentWinningBidder_'+auction_id, username);
@@ -536,6 +524,7 @@ function BidClick(auction_id,user_id){
 
 
 function Countdown(options) {
+  var x;  
   var timer,
   instance = this,
   seconds = options.seconds || 10,
@@ -543,8 +532,8 @@ function Countdown(options) {
   counterEnd = options.onCounterEnd || function () {};
 
   function decrementCounter() {
-    updateStatus(seconds);    
-    if (seconds === 0) {
+    updateStatus(seconds);
+    if (seconds === x) {
       counterEnd();
       instance.stop();
     }
@@ -552,6 +541,7 @@ function Countdown(options) {
   }
 
   this.start = function (startSec) {
+    x = Math.floor((Math.random() * 6) + 1);      
     clearInterval(timer);
     timer = 0;
     //seconds = options.seconds;

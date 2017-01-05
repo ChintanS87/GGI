@@ -17,7 +17,12 @@
                     echo "$('#bid_".$row['auction_id']."').click(function(){";
                     echo "socket.emit('Userbid',{auction_id:".$row['auction_id'].",user_id:".$userid_final."});";
                     echo "});";
-              
+                    
+                    echo "$('#autobid_".$row['auction_id']."').click(function(){";
+                    echo "socket.emit('UserAutobid',{auction_id:".$row['auction_id'].",user_id:".$userid_final."});";
+                    echo "});";
+                    
+                    
                     echo "socket.on('updateTimer_".$row['auction_id']."',function(timerVal){";                    
                     echo "$('#timer_".$row['auction_id']."').text(timerVal);});";
                     
@@ -100,6 +105,9 @@ echo "<br/>";
 
 echo '<div><span id="timer_'.$row['auction_id'].'"></span><br/>';
 echo '<input type="button" name="bid_'.$row['auction_id'].'" id="bid_'.$row['auction_id'].'" value="Bid Now"/></div>';
+
+echo '<input type="button" name="autobid_'.$row['auction_id'].'" id="autobid_'.$row['auction_id'].'" value="Auto Bid"/></div>';
+
  }
  ?>
 
