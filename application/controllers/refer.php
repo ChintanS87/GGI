@@ -49,12 +49,12 @@ class Refer extends __APP__
                     
                     
                     
-                    $user = "Rajul";
+                    $user = "rajul";
                     $password = "rajul";
                     $msisdn = $this->input->post('refer_num');
                     $sid = "SMSHUB";
                     $OTP = $this->data['OTP'];
-                    $msg = "Dear USER, your password is ".$OTP;
+                    $msg = "Dear Rajul, your password is ".$OTP.".";
                     $msg = urlencode($msg);
                     // Keep 0 if you don’t want to flash the message
                     $fl = "0";
@@ -64,13 +64,13 @@ class Refer extends __APP__
                     $type = "txt";
                     $ch = curl_init("http://cloud.smsindiahub.in/vendorsms/pushsms.aspx?user=".$user."&password=".$password."&msisdn=".$msisdn."&sid=".$sid."&msg=".$msg."&fl=".$fl."&gwid=".$gwid."");
                     
-                    //$ch = curl_init("http://cloud.smsindiahub.in/vendorsms/pushsms.aspx?user=Rajul&password=rajul&msisdn=9820031191&sid=SMSHUB&msg=Dear ANJALI, your password is 1234.&fl=0&gwid=2");
                     curl_setopt($ch, CURLOPT_HEADER, 0);                     
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                      $output = curl_exec($ch);
                      curl_close($ch);
                     // Display MSGID of the successful sms push
-                    echo $output;                    
+                    //echo $output;
+                     
                     $this->data['success_msg']="Referal code sent successfully to ".$this->input->post('refer_num');
                 }
             }

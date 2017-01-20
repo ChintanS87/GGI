@@ -14,15 +14,37 @@
                     $userid_final = 0;                    
                 }
                  $ctr=0; foreach ($live_products as $row) { $ctr++;                  
+                    //bid click
                     echo "$('#bid_".$row['auction_id']."').click(function(){";
                     echo "socket.emit('Userbid',{auction_id:".$row['auction_id'].",user_id:".$userid_final."});";
                     echo "});";
-                    
+
+
+                    //autobid on click
                     echo "$('#autobid_".$row['auction_id']."').click(function(){";
-                    echo "socket.emit('UserAutobid',{auction_id:".$row['auction_id'].",user_id:".$userid_final."});";
+                    ?>                            
+                         if($('#autobid_count_<?php echo $row['auction_id']?>').val()=== '')
+                         {
+                             alert("Please enter number of times autobid is to be done");
+                         }
+                         else
+                         {
+                             var autobidCount = $('#autobid_count_<?php echo $row['auction_id']?>').val();
+                             socket.emit('UserAutobidOn',{auction_id:<?php echo $row['auction_id']?>,user_id:<?php echo $userid_final?>,autobidCount:autobidCount});
+                         }                                   
+                    <?php        
+                    echo "});";                    
+
+
+
+                    //autobid off click
+                    echo "$('#autobid_off_".$row['auction_id']."').click(function(){";
+                    echo "socket.emit('UserAutobidOff',{auction_id:".$row['auction_id'].",user_id:".$userid_final."});";
                     echo "});";
+
                     
                     
+                    //receive data UpdateTimer, CurrentMaxValue and CurrentWinningBidder
                     echo "socket.on('updateTimer_".$row['auction_id']."',function(timerVal){";                    
                     echo "$('#timer_".$row['auction_id']."').text(timerVal);});";
                     
@@ -106,9 +128,13 @@ echo "<br/>";
 echo '<div><span id="timer_'.$row['auction_id'].'"></span><br/>';
 echo '<input type="button" name="bid_'.$row['auction_id'].'" id="bid_'.$row['auction_id'].'" value="Bid Now"/></div>';
 
+
+echo '<input type="text" name="autobid_count_'.$row['auction_id'].'" id="autobid_count_'.$row['auction_id'].'" value=""/></div>';
 echo '<input type="button" name="autobid_'.$row['auction_id'].'" id="autobid_'.$row['auction_id'].'" value="Auto Bid"/></div>';
 
- }
+echo '<input type="button" name="autobid_off_'.$row['auction_id'].'" id="autobid_off_'.$row['auction_id'].'" value="Turn Off Auto Bid"/></div>';
+
+}
  ?>
 
 

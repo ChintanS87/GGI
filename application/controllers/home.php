@@ -41,8 +41,7 @@ class Home extends __APP__
          
 
                  
-        
-        
+
         if (!$this->tank_auth->is_logged_in()) {
                   $this->data['loggedin']= 'false';   
             } else {
