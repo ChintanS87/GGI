@@ -55,6 +55,7 @@ class Home extends __APP__
             
         $this->load->view('/globals/header', $this->data);    
         $this->load->view('home', $this->data);
+        $this->load->view('/globals/footer', $this->data);
     }
     
 

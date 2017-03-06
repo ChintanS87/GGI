@@ -1,3 +1,24 @@
+<script language="javascript">
+$(document).ready(function(){
+    /*
+    $("form").submit(function(){
+        alert("Submitted");
+    });
+      */  
+    $("#contact_number").change(function(){
+        var contact_number = $('#contact_number').val();
+        $.ajax({
+            type:'POST',
+            data:{contact_number: contact_number},
+            url:'<?php echo site_url('getReferals/fetchData'); ?>',
+            success: function(result){
+                $('#result').html(result);
+            }    
+        });
+    });
+});
+</script>
+
 <?php
 if ($use_username) {
 	$username = array(
@@ -63,6 +84,7 @@ $last_name = array(
 	'size'	=> 30,
 );
 
+/*
 $referal_code = array(
 	'name'	=> 'referal_code',
 	'id'	=> 'referal_code',
@@ -70,6 +92,8 @@ $referal_code = array(
 	'maxlength'	=> 10,
 	'size'	=> 30,
 );
+ */
+
 ?>
 <?php echo form_open($this->uri->uri_string()); ?>
 <table>
@@ -115,12 +139,19 @@ $referal_code = array(
 		<td><?php echo form_textarea($address); ?></td>
 		<td style="color: red;"><?php echo form_error($address['name']); ?></td>
 	</tr>
-        
-	<tr>
-		<td><?php echo form_label('Referal code', $referal_code['id']); ?></td>
-		<td><?php echo form_input($referal_code); ?></td>
-		<td style="color: red;"><?php echo form_error($referal_code['name']); ?><?php echo isset($referal_error)?$referal_error:''; ?></td>
+        <tr>
+            <td><div id="resultText">Select a Referal Code to win Free coins</div></td>
+            <td><div id="result" name="result"><?php echo $referalOptions; ?></div></td>
+            <td style="color: red;"><?php echo isset($referal_error)?$referal_error:''; ?></td>                        
+        </tr>
+
+        <!--
+        <tr>
+		<td><?php //echo form_label('Referal code', $referal_code['id']); ?></td>
+		<td><?php //echo form_input($referal_code); ?></td>
+		<td style="color: red;"><?php //echo form_error($referal_code['name']); ?><?php //echo isset($referal_error)?$referal_error:''; ?></td>
 	</tr>
+        -->
         
 	<?php if ($captcha_registration) {
 		if ($use_recaptcha) { ?>
@@ -157,6 +188,8 @@ $referal_code = array(
 	</tr>
 	<?php }
 	} ?>
+        
+        
 </table>
 <?php echo form_submit('register', 'Register'); ?>
 <?php echo form_close(); ?>

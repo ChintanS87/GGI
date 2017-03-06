@@ -118,170 +118,258 @@ class Auth extends CI_Controller
 	 */
 	function register()
 	{
-		if ($this->tank_auth->is_logged_in()) {									// logged in
-			redirect('');
+            if ($this->tank_auth->is_logged_in()) {									// logged in
+                redirect('');
+            } elseif ($this->tank_auth->is_logged_in(FALSE)) {						// logged in, not activated
+                redirect('/auth/send_again/');
+            } elseif (!$this->config->item('allow_registration', 'tank_auth')) {	// registration is off
+                $this->_show_message($this->lang->line('auth_message_registration_disabled'));
+            } else {
+                $this->form_validation->set_rules('first_name', 'First Name', 'trim|required|xss_clean|alpha');
+                $this->form_validation->set_rules('last_name', 'Last Name', 'trim|required|xss_clean|alpha');
 
-		} elseif ($this->tank_auth->is_logged_in(FALSE)) {						// logged in, not activated
-			redirect('/auth/send_again/');
+                $use_username = $this->config->item('use_username', 'tank_auth');
+                if ($use_username) {
+                        $this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean|min_length['.$this->config->item('username_min_length', 'tank_auth').']|max_length['.$this->config->item('username_max_length', 'tank_auth').']|alpha_dash');
+                }
+                $this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email');
+                $this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
+                $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|xss_clean|matches[password]');
+                $this->form_validation->set_rules('contact_number', 'Mobile Number', 'trim|required|xss_clean|numeric|min_length[10]|max_length[10]');
+                $this->form_validation->set_rules('address', 'Address', 'trim|required|xss_clean|alpha_dash');
+                //$this->form_validation->set_rules('referal_code', 'Referal Code', 'trim|xss_clean|alpha_numeric|min_length[6]|max_length[6]');                        
 
-		} elseif (!$this->config->item('allow_registration', 'tank_auth')) {	// registration is off
-			$this->_show_message($this->lang->line('auth_message_registration_disabled'));
 
-		} else {
-                        $this->form_validation->set_rules('first_name', 'First Name', 'trim|required|xss_clean|alpha');
-                        $this->form_validation->set_rules('last_name', 'Last Name', 'trim|required|xss_clean|alpha');
-                         
-			$use_username = $this->config->item('use_username', 'tank_auth');
-			if ($use_username) {
-				$this->form_validation->set_rules('username', 'Username', 'trim|required|xss_clean|min_length['.$this->config->item('username_min_length', 'tank_auth').']|max_length['.$this->config->item('username_max_length', 'tank_auth').']|alpha_dash');
-			}
-			$this->form_validation->set_rules('email', 'Email', 'trim|required|xss_clean|valid_email');
-			$this->form_validation->set_rules('password', 'Password', 'trim|required|xss_clean|min_length['.$this->config->item('password_min_length', 'tank_auth').']|max_length['.$this->config->item('password_max_length', 'tank_auth').']|alpha_dash');
-			$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'trim|required|xss_clean|matches[password]');
-                        $this->form_validation->set_rules('contact_number', 'Mobile Number', 'trim|required|xss_clean|numeric|min_length[10]|max_length[10]');
-                        $this->form_validation->set_rules('address', 'Address', 'trim|required|xss_clean|alpha_dash');
-                        $this->form_validation->set_rules('referal_code', 'Referal Code', 'trim|xss_clean|alpha_numeric|min_length[6]|max_length[6]');
+                $captcha_registration = $this->config->item('captcha_registration', 'tank_auth');
+                $use_recaptcha = $this->config->item('use_recaptcha', 'tank_auth');
+                if ($captcha_registration) {
+                    if ($use_recaptcha) {
+                        $this->form_validation->set_rules('recaptcha_response_field', 'Confirmation Code', 'trim|xss_clean|required|callback__check_recaptcha');
+                    } else {
+                        $this->form_validation->set_rules('captcha', 'Confirmation Code', 'trim|xss_clean|required|callback__check_captcha');
+                    }
+                }
+                $data['errors'] = array();
+
+
+                $email_activation = $this->config->item('email_activation', 'tank_auth');
+
+
+                /*start - added by rajul to list all referals for the given number */            
+                $contact_number = $this->input->post('contact_number');                        
+                $strOutput ="";
+                $query = $this->db->query("Select r.id as ReferalId, r.referal_code as ReferalCode, r.referer_mobile as RefererMobile, u.first_name as FirstName from user_details u, referals r where u.user_id = r.referer_user_id and u.contact_number = r.referer_mobile and r.referal_status='O' and r.referred_mobile ='".$contact_number."'");                                    
+                if ($query->num_rows() > 0)
+                {
+                   foreach ($query->result() as $row)
+                   {
+                      $strOutput = $strOutput."<input type='radio' name='referal' value='".$row->ReferalId."'>".$row->ReferalCode." [ ".$row->FirstName. " - Mobile Number - ". $row->RefererMobile. "]";
+                   }
+                } 
+                else{
+                    $strOutput = "No referals for this number";
+                }
+                $data['referalOptions'] = $strOutput;
+                /*end - added by rajul to list all referals for the given number */
+
+
+                if ($this->form_validation->run()) {								// validation ok
+
+                    /* 
+                    $referal_active="false";
+
+                    if($this->input->post('referal_code')!=""){                                
+                        $query_referal = $this->db->query("Select * from referals where referal_code='".$this->input->post('referal_code')."' and referred_mobile ='".$this->input->post('contact_number')."' and referal_status='O'");                                    
+                        if ($query_referal->num_rows() == 1){
+                            $row_referal = $query_referal->row();
+                            if (isset($row_referal)){
+                                 $referal_tbl_id = $row_referal->id;
+                                 $referer_user_id = $row_referal->referer_user_id;
+                                 $referer_mobile = $row_referal->referer_mobile;
+                                 $referal_active="true";
+                            }                                    
+                        }
+                    }
+                    */
+
+                    $this->user_details = new User_Details();
+                    if(!$this->user_details->is_mobile_available($this->input->post('contact_number'))) {
+                        $data['mobile_exists_error']="Mobile Number is already used by another user. Please choose another Mobile Number.";
+                    }
+                    elseif($strOutput!="No referals for this number" && $this->input->post('referal')==""){
+                        $data['referal_error']="Please select a referal code";
+                    }
+                    /*
+                    elseif($this->input->post('referal_code')!="" && $referal_active!="true")
+                    {
+                        $data['referal_error']="Invalid referal code for given Mobile Number";
+                    }                             
+                     */
+                    else{                        
+                        $data['referal_error']="";
+                        $data['mobile_exists_error']="";
+
                         
-			$captcha_registration	= $this->config->item('captcha_registration', 'tank_auth');
-			$use_recaptcha			= $this->config->item('use_recaptcha', 'tank_auth');
-			if ($captcha_registration) {
-				if ($use_recaptcha) {
-					$this->form_validation->set_rules('recaptcha_response_field', 'Confirmation Code', 'trim|xss_clean|required|callback__check_recaptcha');
-				} else {
-					$this->form_validation->set_rules('captcha', 'Confirmation Code', 'trim|xss_clean|required|callback__check_captcha');
-				}
-			}
-			$data['errors'] = array();
+                        
+                    /*start - send OTP for registration */
+                    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    $start = rand(0, strlen($characters));
+                    $ref_char = substr($characters,$start,2);
+                    $ref_num = mt_rand(1000,9999);
+                    $this->data['OTP'] = $ref_char.$ref_num;
 
-			$email_activation = $this->config->item('email_activation', 'tank_auth');
-
-			if ($this->form_validation->run()) {								// validation ok
-                             
-                            $referal_active="false";
-                            if($this->input->post('referal_code')!=""){                                
-                                $query_referal = $this->db->query("Select * from referals where referal_code='".$this->input->post('referal_code')."' and referred_mobile ='".$this->input->post('contact_number')."' and referal_status='O'");                                    
-                                if ($query_referal->num_rows() == 1){
-                                    $row_referal = $query_referal->row();
-                                    if (isset($row_referal)){
-                                         $referal_tbl_id = $row_referal->id;
-                                         $referer_user_id = $row_referal->referer_user_id;
-                                         $referer_mobile = $row_referal->referer_mobile;
-                                         $referal_active="true";
-                                    }                                    
-                                }
-                            }
-                            
-                            $this->user_details = new User_Details();
-                            if(!$this->user_details->is_mobile_available($this->input->post('contact_number'))) {
-                                $data['mobile_exists_error']="Mobile Number is already used by another user. Please choose another Mobile Number.";
-                            }elseif($this->input->post('referal_code')!="" && $referal_active!="true")
-                            {
-                                $data['referal_error']="Invalid referal code for given Mobile Number";
-                            }
-                            else{
-                                $data['referal_error']="";
-                                $data['mobile_exists_error']="";
-				if (!is_null($data = $this->tank_auth->create_user(
-						$use_username ? $this->form_validation->set_value('username') : '',
-						$this->form_validation->set_value('email'),
-						$this->form_validation->set_value('password'),
-						$email_activation))) {									// success
-
-                                        /*added by rajul start*/
-                                        $query = $this->db->query("Select id from users where email='".$this->input->post('email')."'");                                    
-                                        $row = $query->row();
-                                        if (isset($row))
-                                        {
-                                             $userid_insert = $row->id;
-                                        }
-                                        $date_now = new DateTime('now');
-                                        
-                                        $user_details_insert = array('user_id' => $userid_insert,
-                                            'first_name'=>$this->input->post('first_name'),
-                                            'last_name'=> $this->input->post('last_name'),
-                                            'contact_number' => $this->input->post('contact_number'),
-                                            'address' => $this->input->post('address'),
-                                            'user_coins'=> 10,
-                                            'user_type'=> 'F',
-                                            'added_date' => date('Y-m-d H:i:s'),
-                                            'updated_date' => date('Y-m-d H:i:s')
-                                            );                                        
-                                        $this->db->insert('user_details',$user_details_insert);
-                                        
-                                        $user_coins_insert = array('user_id' => $userid_insert,
-                                            'coins'=> 10,
-                                            'source' => 'REG',
-                                            'added_date' => date('Y-m-d H:i:s'),
-                                            'updated_date' => date('Y-m-d H:i:s')
-                                            );                                        
-                                        $this->db->insert('user_coins',$user_coins_insert);
-                                        
-                                        if($referal_active=="true"){
-                                            $referer_coins_insert = array('user_id' => $referer_user_id,
-                                                'coins'=> 10,
-                                                'source' => 'REF',
-                                                'added_date' => date('Y-m-d H:i:s'),
-                                                'updated_date' => date('Y-m-d H:i:s')
-                                                );                                        
-                                            $this->db->insert('user_coins',$referer_coins_insert);
-
-                                            $referred_coins_insert = array('user_id' => $userid_insert,
-                                                'coins'=> 10,
-                                                'source' => 'REF',
-                                                'added_date' => date('Y-m-d H:i:s'),
-                                                'updated_date' => date('Y-m-d H:i:s')
-                                                );                                        
-                                            $this->db->insert('user_coins',$referred_coins_insert); 
-                                            
-                                            $this->user_details->where('user_id',$referer_user_id)->update('user_coins','user_coins +10');
-                                            $this->user_details->where('user_id',$userid_insert)->update('user_coins','user_coins +10');
-
+                    $user = "rajul";
+                    $password = "rajul";
+                    $msisdn = $this->input->post('contact_number');
+                    $sid = "SMSHUB";
+                    $OTP = $this->data['OTP'];
+                    $msg = "Dear Rajul, your password is ".$OTP.".";
+                    $msg = urlencode($msg);
+                    // Keep 0 if you don’t want to flash the message
+                    $fl = "0";
+                    // if you are using transaction sms api then keep gwid = 2 or if promotional then remove this parameter
+                    $gwid = "2";
+                    // For Plain Text, use "txt" ; for Unicode symbols or regional Languages like hindi/tamil/kannada use "uni"
+                    $type = "txt";
+                    $ch = curl_init("http://cloud.smsindiahub.in/vendorsms/pushsms.aspx?user=".$user."&password=".$password."&msisdn=".$msisdn."&sid=".$sid."&msg=".$msg."&fl=".$fl."&gwid=".$gwid."");
                     
-                                            $this->referals = new Referals();
-                                            $this->referals->where('id',$referal_tbl_id)->update('referal_status','C');                                            
+                    curl_setopt($ch, CURLOPT_HEADER, 0);                     
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                     $output = curl_exec($ch);
+                     curl_close($ch);
+                    // Display MSGID of the successful sms push
+                    //echo $output;
+                    /*end - send OTP for registration */
+
+                     
+                     
+                        //create user
+                        if (!is_null($data = $this->tank_auth->create_user(
+                                        $use_username ? $this->form_validation->set_value('username') : '',
+                                        $this->form_validation->set_value('email'),
+                                        $this->form_validation->set_value('password'),
+                                        $email_activation,
+                                        $OTP))) {									// success
+
+                                /*added by rajul start*/                     
+                            
+                                //insert into user details
+                            /*
+                                $query = $this->db->query("Select id from users where email='".$this->input->post('email')."'");                                    
+                                $row = $query->row();
+                                if (isset($row))
+                                {
+                                     $userid_insert = $row->id;
+                                }
+                                $date_now = new DateTime('now');
+                            */
+                            
+                                $userid_insert = $data['user_id'];
+
+                                $user_details_insert = array('user_id' => $userid_insert,
+                                    'first_name'=>$this->input->post('first_name'),
+                                    'last_name'=> $this->input->post('last_name'),
+                                    'contact_number' => $this->input->post('contact_number'),
+                                    'address' => $this->input->post('address'),
+                                    'user_coins'=> 10,
+                                    'user_type'=> 'F',
+                                    'added_date' => date('Y-m-d H:i:s'),
+                                    'updated_date' => date('Y-m-d H:i:s')
+                                    );                                        
+                                $this->db->insert('user_details',$user_details_insert);
+
+                                //insert into user coins
+                                $user_coins_insert = array('user_id' => $userid_insert,
+                                    'coins'=> 10,
+                                    'source' => 'REG',
+                                    'added_date' => date('Y-m-d H:i:s'),
+                                    'updated_date' => date('Y-m-d H:i:s')
+                                    );                                        
+                                $this->db->insert('user_coins',$user_coins_insert);
+
+
+                                // insert into user_coins and update user_details if referal is active
+                                if($this->input->post('referal')!=""){
+                                    
+                                    $query_referal = $this->db->query("Select * from referals where id=".$this->input->post('referal'));                                    
+                                    if ($query_referal->num_rows() == 1){
+                                        $row_referal = $query_referal->row();
+                                        if (isset($row_referal)){
+                                             $referer_user_id = $row_referal->referer_user_id;
+                                        }                                    
+                                    }
+                                    
+                                    $referer_coins_insert = array('user_id' => $referer_user_id,
+                                        'coins'=> 10,
+                                        'source' => 'REF',
+                                        'added_date' => date('Y-m-d H:i:s'),
+                                        'updated_date' => date('Y-m-d H:i:s')
+                                        );                                        
+                                    $this->db->insert('user_coins',$referer_coins_insert);
+
+                                    $referred_coins_insert = array('user_id' => $userid_insert,
+                                        'coins'=> 10,
+                                        'source' => 'REF',
+                                        'added_date' => date('Y-m-d H:i:s'),
+                                        'updated_date' => date('Y-m-d H:i:s')
+                                        );                                        
+                                    $this->db->insert('user_coins',$referred_coins_insert); 
+
+                                    $this->db->query("Update user_details SET user_coins=user_coins+10 WHERE user_id='".$referer_user_id."'");
+                                    $this->db->query("Update user_details SET user_coins=user_coins+10 WHERE user_id='".$userid_insert."'");
+                                    
+                                    //$this->user_details->where('user_id',$referer_user_id)->update('user_coins','user_coins +10');
+                                    //$this->user_details->where('user_id',$userid_insert)->update('user_coins','user_coins +10');
+
+
+                                    $this->referals = new Referals();
+                                    $this->referals->where('id',$this->input->post('referal'))->update('referal_status','C');                                            
+                                }
+
+                               /*added by rajul end*/
+
+
+                                $data['site_name'] = $this->config->item('website_name', 'tank_auth');
+
+                                if ($email_activation) {									// send "activate" email
+                                        $data['activation_period'] = $this->config->item('email_activation_expire', 'tank_auth') / 3600;
+
+                                        $this->_send_email('activate', $data['email'], $data);
+
+                                        unset($data['password']); // Clear password (just for any case)
+
+                                        $this->_show_message($this->lang->line('auth_message_registration_completed_1'));
+
+                                } else {
+                                        if ($this->config->item('email_account_details', 'tank_auth')) {	// send "welcome" email
+
+                                                $this->_send_email('welcome', $data['email'], $data);
                                         }
-                                       /*added by rajul end*/
-                                        
-                                        
-					$data['site_name'] = $this->config->item('website_name', 'tank_auth');
+                                        unset($data['password']); // Clear password (just for any case)
 
-					if ($email_activation) {									// send "activate" email
-						$data['activation_period'] = $this->config->item('email_activation_expire', 'tank_auth') / 3600;
+                                        $this->_show_message($this->lang->line('auth_message_registration_completed_2').' '.anchor('/auth/login/', 'Login'));
+                                }
+                        } else {
+                                $errors = $this->tank_auth->get_error_message();
+                                foreach ($errors as $k => $v)	$data['errors'][$k] = $this->lang->line($v);
+                        }
+                    }
+                }
 
-						$this->_send_email('activate', $data['email'], $data);
+                if ($captcha_registration) {
+                        if ($use_recaptcha) {
+                                $data['recaptcha_html'] = $this->_create_recaptcha();
+                        } else {
+                                $data['captcha_html'] = $this->_create_captcha();
+                        }
+                }
+                $data['use_username'] = $use_username;
+                $data['captcha_registration'] = $captcha_registration;
+                $data['use_recaptcha'] = $use_recaptcha;
 
-						unset($data['password']); // Clear password (just for any case)
-
-						$this->_show_message($this->lang->line('auth_message_registration_completed_1'));
-
-					} else {
-						if ($this->config->item('email_account_details', 'tank_auth')) {	// send "welcome" email
-
-							$this->_send_email('welcome', $data['email'], $data);
-						}
-						unset($data['password']); // Clear password (just for any case)
-
-						$this->_show_message($this->lang->line('auth_message_registration_completed_2').' '.anchor('/auth/login/', 'Login'));
-					}
-				} else {
-					$errors = $this->tank_auth->get_error_message();
-					foreach ($errors as $k => $v)	$data['errors'][$k] = $this->lang->line($v);
-				}
-                            }
-			}
-                        
-			if ($captcha_registration) {
-				if ($use_recaptcha) {
-					$data['recaptcha_html'] = $this->_create_recaptcha();
-				} else {
-					$data['captcha_html'] = $this->_create_captcha();
-				}
-			}
-			$data['use_username'] = $use_username;
-			$data['captcha_registration'] = $captcha_registration;
-			$data['use_recaptcha'] = $use_recaptcha;
-			$this->load->view('auth/register_form', $data);
-		}
+                $this->load->view('/globals/header', $data); 
+                $this->load->view('auth/register_form', $data);
+            }
 	}
 
 	/**
@@ -328,17 +416,38 @@ class Auth extends CI_Controller
 	 */
 	function activate()
 	{
-		$user_id		= $this->uri->segment(3);
-		$new_email_key	= $this->uri->segment(4);
+            $user_id = $this->uri->segment(3);
+            $new_email_key = $this->uri->segment(4);
+                
 
-		// Activate user
-		if ($this->tank_auth->activate_user($user_id, $new_email_key)) {		// success
-			$this->tank_auth->logout();
-			$this->_show_message($this->lang->line('auth_message_activation_completed').' '.anchor('/auth/login/', 'Login'));
+            $data['error_msg'] ="";
+            $this->form_validation->set_rules('reg_OTP', 'Registration OTP', 'trim|required|xss_clean|alpha_numeric|min_length[6]|max_length[6]');                        
+            $data['errors'] = array();
 
-		} else {																// fail
-			$this->_show_message($this->lang->line('auth_message_activation_failed'));
-		}
+            if ($this->form_validation->run()) {
+                $query = $this->db->query("Select * from users where id=".$user_id);
+                
+                if ($query->num_rows() == 1){                        
+                    $row = $query->row();
+                    //if (isset($row)){
+                        if($row->OTP == $this->input->post('reg_OTP')){
+                            // Activate user
+                            if ($this->tank_auth->activate_user($user_id, $new_email_key)) {		// success
+                                $this->tank_auth->logout();
+                                $this->_show_message($this->lang->line('auth_message_activation_completed').' '.anchor('/auth/login/', 'Login'));
+                            } else {																// fail
+                                $this->_show_message($this->lang->line('auth_message_activation_failed'));
+                            }
+                        }
+                        else{
+                            $data['error_msg'] ="Incorrect Registration OTP";
+                        }
+                    //}                                    
+                }
+                
+            }
+            $this->load->view('/globals/header', $data);                 
+            $this->load->view('auth/verifyRegOTP', $data);            
 	}
 
 	/**

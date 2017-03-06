@@ -18,5 +18,9 @@ $(document).ready(function () {
         $('#purchase_form_amount').val(1);
         $('#purchase_coins_form').submit();        
     });    
+
 });
+
+
+
 

@@ -25,12 +25,19 @@ class Refer extends __APP__
                 foreach($this->data['referer_info'] as $row) {        
                     $this->data['referer_mobile'] = $row->contact_number;
                 }
+                
+                $array = array('referer_mobile' => $this->data['referer_mobile'], 'referred_mobile' => $this->input->post('refer_num'));
+                $this->data['referalTableCheck'] = $this->referals->where($array)->count();
                                 
                 
                 if($this->data['referer_mobile'] == $this->input->post('refer_num'))
                 {
                     $this->data['error_msg'] ="The referal number cannot be the same as the user's number";  
-                } else{
+                }
+                elseif($this->data['referalTableCheck'] != 0){
+                    $this->data['error_msg'] ="You have already sent a referal to this number";
+                }
+                else{
                     $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
                     $start = rand(0, strlen($characters));
                     $ref_char = substr($characters,$start,2);
