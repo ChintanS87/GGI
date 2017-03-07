@@ -93,6 +93,10 @@ if ($loggedin=='true')
         $coinsDisplay = $row->coins;
     }
 }
+else{
+    $coinsDisplay = 0;
+}
+    
 
 ?>
     
@@ -118,14 +122,13 @@ if ($loggedin=='true')
                                 <div class="dropdown">
                                     <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <?php
-                                        echo $coinsDisplay;
-                                        
+                                            echo $coinsDisplay;                                        
                                         ?>
                                     </button>
                                     <ul style="text-align:center; padding: 15px 0px;" class="dropdown-menu" aria-labelledby="dLabel">
                                         <li style="text-align:center; width:100%;" >HI! GRABBY</li>
-                                        <li style="text-align:center; width:100%;"> <img src="images/mascotb.png"/> </li>
-                                        <li style="text-align:center; width:100%; padding: 10px 0px;">YOU HAVE 100 COINS</li>
+                                        <li style="text-align:center; width:100%;"> <img src="<?= base_url(); ?>statics/images/mascotb.png"/> </li>
+                                        <li style="text-align:center; width:100%; padding: 10px 0px;">YOU HAVE <?php echo $coinsDisplay ?> COINS</li>
                                         <!--<li style="text-align:center; display:inline; margin:0px auto;">100  COINS</li>-->
                                         <li style="text-align:center; width:100%;"><input class="input-btn" value="Buy Coins" type="button"></li>
                                     </ul>
@@ -136,8 +139,14 @@ if ($loggedin=='true')
                         <li><a href="#"><i class="fa-exclamation-circle" aria-hidden="true"></i>How It Works</a></li>
                     </ul>
                     <ul class="kf_user">
-                        <li><a href="#"><i class="fa fa-lock"></i>Register</a></li>
-                        <li><a href="#">Login</a></li>
+                        <?php if ($loggedin=='true'){ ?>
+                            <li><a href="<?php echo site_url('auth/logout/') ?>">Logout</a></li>                            
+                        <?php } 
+                        else{
+                        ?>
+                            <li><a href="<?php echo site_url('auth/register/') ?>"><i class="fa fa-lock"></i>Register</a></li>
+                            <li><a href="<?php echo site_url('auth/login/') ?>">Login</a></li>    
+                        <?php } ?>
                     </ul>
                 </div>
             </div>
@@ -157,8 +166,8 @@ if ($loggedin=='true')
                 <div class="kode_navigation"><!-- style="padding-top:15px;"-->
                     <!--Navigation Start-->
                     <ul class="nav">
-                                <li><a href="#">Buy Coins</a></li>
-                                <li><a href="#">Referral</a></li>
+                                <li><a href="<?php echo site_url('purchase/') ?>">Buy Coins</a></li>
+                                <li><a href="<?php echo site_url('refer/') ?>">Referral</a></li>
                                 <li><a href="#">Meet Winners</a></li>
                     </ul>
                     <!--Navigation End-->

@@ -14,18 +14,29 @@ class Home extends __APP__
     
     public function index()
     {
+        /*
         $this->db->select('*');
         $this->db->from('product_details p');
         $this->db->join('auction_details a', 'a.product_id = p.product_id');
         $this->db->where('a.is_active','Y');
         $query_live = $this->db->get();
-        $this->data['live_products'] = $query_live->result_array();
+        $this->data['live_products'] = $query_live->result_array(); 
+         */
+
+        $this->db->select('*');
+        $this->db->from('product_details p');
+        $this->db->join('auction_details a', 'a.product_id = p.product_id');        
+        $this->db->join('user_details u', 'a.current_winning_bidder = u.user_id');
+        $this->db->where('a.is_active','Y');
+        $query_live = $this->db->get();
+        $this->data['live_products'] = $query_live->result_array(); 
+        
         //$this->data['num_of_live_products'] = $query_live->num_rows();
         
         
         $this->db->select('*');
         $this->db->from('product_details p');
-        $this->db->join('auction_details a', 'a.product_id = p.product_id');
+        $this->db->join('auction_details a', 'a.product_id = p.product_id');        
         $this->db->where('a.is_active','U');
         $query_upcoming = $this->db->get();
         $this->data['upcoming_products'] = $query_upcoming->result_array();
@@ -35,6 +46,7 @@ class Home extends __APP__
         $this->db->select('*');
         $this->db->from('product_details p');
         $this->db->join('auction_details a', 'a.product_id = p.product_id');
+        $this->db->join('user_details u', 'a.current_winning_bidder = u.user_id');        
         $this->db->where('a.is_active','C');
         $query_closed = $this->db->get();
         $this->data['closed_products'] = $query_closed->result_array();        

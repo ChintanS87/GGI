@@ -309,7 +309,6 @@ echo "<br/>";
 
  $ctrLive=1; foreach ($live_products as $row) {  
  ?>
-
                                     <!--Widget Code 1 Added Here -->
                                     <aside class="col-md-4">
                                         <div class="widget roster_sidebar">
@@ -392,11 +391,12 @@ echo "<br/>";
 
 
                                             <!--Widget COUNT Down Start-->
+                                            <!--
                                             <ul style="border:1px solid #d7d8d8; border-top: 0px; padding:3px 0px 3px 0px;" class="kf_countdown countdown">
                                                 <li style="width:33%;">
-                                                    <span style="font-size:22px;" class="hours">22</span>
+                                                    <span style="font-size:22px;" class="hours">00</span>
                                                     <p class="hours_ref">hours</p>
-                                                </li>
+                                                </li>                                                
                                                 <li style="width:33%;">
                                                     <span style="font-size:22px;" class="minutes">09</span>
                                                     <p class="minutes_ref">minutes</p>
@@ -404,10 +404,27 @@ echo "<br/>";
                                                 <li style="width:33%;">
                                                     <span style="font-size:22px;" class="seconds last">25</span>
                                                     <p class="seconds_ref">seconds</p>
-                                                </li>
+                                                </li>                                                                                                    
                                             </ul>
-                                            <!--Widget COUNT Down End-->
+                                            --> 
 
+
+                                            <ul style="border-style:solid; border-color:#d7d8d8; border-width: 0px 1px 1px 1px;" class="kf_table2 kf_tableaside">
+                                                <li>
+                                                    <div class="user-price">
+                                                        <?php
+                                                            echo '<span id="timer_'.$row['auction_id'].'"></span>';
+                                                        ?>
+                                                    </div>
+                                                    <div class="user-price">
+                                                        <span>
+                                                            HOURS MINUTES SECONDS
+                                                        </span>
+                                                    </div>
+                                                </li>    
+                                            </ul>                                            
+                                            
+                                            <!--Widget COUNT Down End-->
 
 
                                             <ul style="border-style:solid; border-color:#d7d8d8; border-width: 0px 1px 1px 1px;" class="kf_table2 kf_tableaside">
@@ -415,27 +432,51 @@ echo "<br/>";
                                                     <div class="user-price">
                                                         <span>
                                                             <em style="color:#e1cc0f;" >Auction Price</em>
-                                                            INR 9.10
+                                                            <?php echo '<span id="CurrentMaxValue_'.$row['auction_id'].'">INR '.$row['current_max_value'].'</span>'; ?>
                                                         </span>
                                                     </div>
                                                     <div class="user-price"><!--team_logo bid-user-->
                                                         <span>
                                                             <em style="color:#e1cc0f;" >Current Winner</em>
                                                             <img style="border-radius:100%;" src="<?= base_url(); ?>statics/extra-images/admin.jpg" alt="">
-                                                            <a href="#">Username</a>
+                                                            <a href="#"><?php echo '<span id="CurrentWinningBidder_'.$row['auction_id'].'">'.$row['first_name'].'</span>'; ?></a>
                                                         </span>
                                                     </div>
                                                 </li>    
                                             </ul>
 
+                                            
+
+
+
+
+
+
+
+
                                             <div style="" class="kf_border-2">
                                                 <div style="border-style:solid; border-color:#d7d8d8; border-width: 0px 1px 1px 1px; background:#e7eaf0 none repeat scroll 0 0;" class="kf_plyer_rating">
                                                     <div class="team_logo bid-user">
                                                         <span><img style="border-radius:100%;" src="<?= base_url(); ?>statics/extra-images/coin.png" alt=""><a href="#">X <?php echo $row['coins_per_bid'] ?></a></span>
+                                                        
+                                                        
+                                                        <?php
+                                                            echo '<span><input type="button" name="bid_'.$row['auction_id'].'" id="bid_'.$row['auction_id'].'" value="Bid Now"/></span>';
+                                                        ?> 
+                                                        <?php
+                                                            echo '<input type="text" name="autobid_count_'.$row['auction_id'].'" id="autobid_count_'.$row['auction_id'].'" value="" size="1" />';
 
-                                                        <span style="background-color:#e1cc0f;"><img style="border-radius:100%;" src="<?= base_url(); ?>statics/extra-images/order.png" alt=""><a style="color:#10151c;" href="#">BID</a></span>
+                                                            echo '<span><input type="button" name="autobid_'.$row['auction_id'].'" id="autobid_'.$row['auction_id'].'" value="Auto Bid"/></span>';
+                                                            
+                                                            //echo '<input type="button" name="autobid_off_'.$row['auction_id'].'" id="autobid_off_'.$row['auction_id'].'" value="Turn Off Auto Bid"/>';                                                            
+                                                        ?>    
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        <!--<span style="background-color:#e1cc0f;"><img style="border-radius:100%;" src="<?= base_url(); ?>statics/extra-images/order.png" alt=""><a style="color:#10151c;" href="#">BID</a></span>-->
 
-                                                        <!--<span style="width:40%;">-->
+                                                        <!--
                                                         <div style="width:33%;" class="user-auto radio_style3">
                                                             <label>
                                                                 <ul class="kf_table">
@@ -459,7 +500,7 @@ echo "<br/>";
                                                                 </ul>
                                                             </label>
                                                         </div>
-
+                                                        -->
                                                     </div>
                                                 </div>
                                            </div>
@@ -538,23 +579,6 @@ $ctrLive++;
     <!--Result Slider End-->
 
 
-
-    <!--ticker Wrap Start-->
-    <div class="kf_ticker-wrap twitter_ticker">
-        <div class="container">
-            <div class="kf_ticker">
-                <span><i class="fa fa-twitter"></i></span>
-                <div class="kf_ticker_slider">
-                    <ul class="ticker">
-                        <li><p>One Lines Posts & Updates for Users can be flashed here in 0ne or 2 liners as summary <a href="#">https://t.co/nifHgDnXes</a></p></li>
-                        <li><p>Promotional Activity for marketting purpose can be set here as one liners<a href="#">https://t.co/nifHgDnXes</a></p></li>
-                        <li><p>Encouraging Quotes for sucess and risks can be flashed here just as motivational element for users <a href="#">https://t.co/nifHgDnXes</a></p></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--ticker Wrap End-->
 
     
     

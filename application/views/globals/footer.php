@@ -1,3 +1,20 @@
+    <!--ticker Wrap Start-->
+    <div class="kf_ticker-wrap twitter_ticker">
+        <div class="container">
+            <div class="kf_ticker">
+                <span><i class="fa fa-twitter"></i></span>
+                <div class="kf_ticker_slider">
+                    <ul class="ticker">
+                        <li><p>One Lines Posts & Updates for Users can be flashed here in 0ne or 2 liners as summary <a href="#">https://t.co/nifHgDnXes</a></p></li>
+                        <li><p>Promotional Activity for marketting purpose can be set here as one liners<a href="#">https://t.co/nifHgDnXes</a></p></li>
+                        <li><p>Encouraging Quotes for sucess and risks can be flashed here just as motivational element for users <a href="#">https://t.co/nifHgDnXes</a></p></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--ticker Wrap End-->
+
     <!--Footer Wrap Start-->
     <footer class="kode_footer_2">
         <div class="container">
