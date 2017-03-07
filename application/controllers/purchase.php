@@ -71,11 +71,13 @@ class Purchase extends __APP__
 
                 if ($redirectpage=='false'){
                     $this->load->view('/globals/header', $this->data);
-                    $this->load->view('purchase', $this->data);                        
+                    $this->load->view('purchase', $this->data);  
+                    $this->load->view('/globals/footer', $this->data);
                 }
                 else if($redirectpage=='true') {
                     $this->load->view('/globals/header', $this->data);
-                    $this->load->view('payum', $this->data);                        
+                    $this->load->view('payum', $this->data); 
+                    $this->load->view('/globals/footer', $this->data);
                 }                
             }            
         }

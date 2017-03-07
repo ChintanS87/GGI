@@ -50,7 +50,8 @@ class Home extends __APP__
 		//$data['username'] = $this->tank_auth->get_username();
                                 
                 $this->data['userid'] = $this->tank_auth->get_user_id();
-                $this->data['user_coins'] = $this->user_coins->select_sum('coins')->where('user_id',$data['user_id'])->get();
+                //$this->data['user_coins'] = $this->user_coins->select_sum('coins')->where('user_id',$data['user_id'])->get();
+                $this->data['user_coins'] = $this->user_details->select('user_coins')->where('user_id',$data['user_id'])->get();
             }
             
         $this->load->view('/globals/header', $this->data);    

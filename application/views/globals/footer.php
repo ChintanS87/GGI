@@ -1,28 +1,131 @@
-<div class="footer">
-    <div class="container">
-        <div class="text-center">
-            <a href="https://www.facebook.com/RB.in" target="_blank"><img src="<?= base_url() ?>statics/images/facebook-icon.png"></a>
-            <a href="http://twitter.com/discoverRB" target="_blank"><img src="<?= base_url() ?>statics/images/twitter-icon.png"></a>
-            <a href="https://in.linkedin.com/company/discoverrb" target="_blank"><img src="<?= base_url() ?>statics/images/linkedin-icon.png"></a>
-            <a href="http://www.youtube.com/user/RBworldwide" target="_blank"><img src="<?= base_url() ?>statics/images/youtube-icon.png"></a>
-            <a href="https://plus.google.com/u/0/+reckittbenckiser/posts" target="_blank"><img src="<?= base_url() ?>statics/images/google-icon.png"></a>
-        </div>
-    </div>
-</div>
-<div class="footer-second">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <p>&copy; Copyright Maverick Case Challenge, A Reckitt Benckiser’s Property All Right Reserved.</p>
-            </div>            
-            <div class="col-md-6 text-right">
-                <a href="<?=  site_url('contact');?>">Contact Us</a>
-                <a href="<?=  site_url('privacy-policy');?>">Privacy Policy</a>
-                <a href="<?=  site_url('tnc');?>">Terms & Conditions</a>
+    <!--Footer Wrap Start-->
+    <footer class="kode_footer_2">
+        <div class="container">
+            <span class="go-up">
+                <i class="fa fa-angle-up"></i>
+            </span>
+            <div class="row">
+                <div class="col-md-3">
+                    <!--Widget Text Start-->
+                    <div class="widget widget_text">
+                        <div style="margin-bottom:16px;" class="logo">
+                            <a href="#"><img style="margin-top:-12px" src="<?= base_url(); ?>statics/images/ggi-logow.png" alt=""></a>
+                        </div>
+                        <p>About Us Content - explaining the concept of Go Grab It comes here.</p>
+                        <ul class="kf_contact_meta">
+                            <li>
+                                <span class="icon-placeholder"></span>
+                                <address>Sri Krishna CHS, Upper Goving Nagar, Malad (East), Mumbai - 400097</address>
+                            </li>
+                            <li>
+                                <span class="icon-mail"></span>
+                                <p>info@gograbit.in</p>
+                            </li>
+                            <li>
+                                <span class="icon-technology"></span>
+                                <p>+ 91 77383 31888</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--Widget Text End-->
+                </div>
+                <div class="col-md-3">
+                    <div class="widget widget_link2">
+                        <h2 class="kf_hd7">Site Map</h2>
+                        <!--Widget Recent Post Start-->
+                        <ul class="links_dec links_dec2">
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#">Live Auctions</a></li>
+                            <li><a href="#">Upcoming Auctions</a></li>
+                            <li><a href="#">Help & FAQ</a></li>
+                            <li><a href="#">Contact Support</a></li>
+                        </ul>
+                        <!--Widget Recent Post End-->
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="widget widget_recentpost2">
+                        <h2 class="kf_hd7">Usefull links</h2>
+                        <ul class="links_dec links_dec2">
+                            <li><a href="#">Terms & Conditions</a></li>
+                            <li><a href="#">Legal Term of Use</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Referal Program</a></li>
+                            <li><a href="#">Responsible Bidding</a></li>
+                        </ul>
+                        <!--Link Dec Start-->
+                        
+                        <!--Link Dec End-->
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="widget widget_instagram">
+                        <h2 class="kf_hd7">Social Activity</h2>
+                        <!--Widget Recent Post Start-->
+                        <ul>
+                            <li><a href="#"><img src="<?= base_url(); ?>statics/extra-images/insta1.jpg" alt=""></a></li>
+                            <li><a href="#"><img src="<?= base_url(); ?>statics/extra-images/insta2.jpg" alt=""></a></li>
+                            <li><a href="#"><img src="<?= base_url(); ?>statics/extra-images/insta3.jpg" alt=""></a></li>
+                            <li><a href="#"><img src="<?= base_url(); ?>statics/extra-images/insta4.jpg" alt=""></a></li>
+                            <li><a href="#"><img src="<?= base_url(); ?>statics/extra-images/insta5.jpg" alt=""></a></li>
+                            <li><a href="#"><img src="<?= base_url(); ?>statics/extra-images/insta6.jpg" alt=""></a></li>
+                        </ul>
+                        <!--Widget Recent Post End-->
+                    </div>
+                </div>
             </div>
         </div>
+    </footer>
+    <!--Footer Wrap End-->
+    <!--Copy Right Wrap Start-->
+    <div class="copy_right3">
+        <div class="container">
+            <p>&copy; Copyright <a href="#">GO GRAB IT</a> . 2017 . All Rights Reserved</p>
+            <ul class="kf_social3">
+                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                <li><a href="#"><i class="fa fa-rss"></i></a></li>
+            </ul>
+        </div>
     </div>
+    <!--Copy Right Wrap End-->
+    <!--Register Pop Up Wrap Start-->
+    <div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="search">
+        <div class="modal-dialog" role="document">
+            <div class="input_dec">
+                <input type="text" placeholder="search......">
+                <button class="btn_icon"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+    </div>        
+    <!--Register Pop Up Wrap End-->
 </div>
+<!--kode Wrapper End-->
 
-</body>
+    <!--Jquery Library-->
+    <script src="<?= base_url(); ?>statics/js/jquery.js"></script>
+    <!--Slick Slider JavaScript-->
+    <script src="<?= base_url(); ?>statics/js/slick.min.js"></script>
+	<!--Bootstrap core JavaScript-->
+    <script src="<?= base_url(); ?>statics/js/bootstrap.js"></script>
+
+
+    <!--Jquery UI Library-->
+    <script src="<?= base_url(); ?>statics/js/range-slider.js"></script>
+    <!--Pretty Photo JavaScript-->
+    <script src="<?= base_url(); ?>statics/js/jquery.prettyPhoto.js"></script>
+    <!--Dl Menu Script-->
+    <script src="<?= base_url(); ?>statics/js/dl-menu/modernizr.custom.js"></script>
+    <script src="<?= base_url(); ?>statics/js/dl-menu/jquery.dlmenu.js"></script>
+    <!--Number Count (Waypoints) JavaScript-->
+    <script src="<?= base_url(); ?>statics/js/downCount.js"></script>
+    <script src="<?= base_url(); ?>statics/js/waypoints-min.js"></script>
+    <!--Progress bar JavaScript-->
+    <script src="<?= base_url(); ?>statics/js/jprogress.js" type="text/javascript"></script>
+    <script src="<?= base_url(); ?>statics/js/canvasjs.min.js" type="text/javascript"></script>
+    <!--Custom JavaScript-->
+    <script src="<?= base_url(); ?>statics/js/custom.js"></script>
+
+  </body>
 </html>
+
