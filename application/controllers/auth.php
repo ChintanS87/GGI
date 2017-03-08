@@ -424,7 +424,8 @@ class Auth extends CI_Controller
 	{
             $user_id = $this->uri->segment(3);
             $new_email_key = $this->uri->segment(4);
-                
+            
+            $data['loggedin']='false';                
 
             $data['error_msg'] ="";
             $this->form_validation->set_rules('reg_OTP', 'Registration OTP', 'trim|required|xss_clean|alpha_numeric|min_length[6]|max_length[6]');                        
@@ -437,6 +438,7 @@ class Auth extends CI_Controller
                     $row = $query->row();
                     //if (isset($row)){
                         if($row->OTP == $this->input->post('reg_OTP')){
+                            $data['loggedin']='true';
                             // Activate user
                             if ($this->tank_auth->activate_user($user_id, $new_email_key)) {		// success
                                 $this->tank_auth->logout();
@@ -446,6 +448,7 @@ class Auth extends CI_Controller
                             }
                         }
                         else{
+                            $data['loggedin']='false';
                             $data['error_msg'] ="Incorrect Registration OTP";
                         }
                     //}                                    
@@ -453,7 +456,8 @@ class Auth extends CI_Controller
                 
             }
             $this->load->view('/globals/header', $data);                 
-            $this->load->view('auth/verifyRegOTP', $data);            
+            $this->load->view('auth/verifyRegOTP', $data);
+            $this->load->view('/globals/footer', $data);
 	}
 
 	/**
